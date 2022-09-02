@@ -9,9 +9,9 @@ by [Worn Off Keys](https://github.com/AlexzanderFlores/WOKCommands). The goal of
 package is to make it simple and easy to get your bot off the ground without worrying about your own command
 handler.
 
-# Documentation [WIP]
+# Documentation
 
-~~The official documentation can be found here: https://docs.wornoffkeys.com~~
+The official documentation can be found [here](https://karel-kryda.gitbook.io/djscommands/).
 
 # Installation
 
