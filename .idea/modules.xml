@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/WOKCommands.iml" filepath="$PROJECT_DIR$/.idea/WOKCommands.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/DJSCommands.iml" filepath="$PROJECT_DIR$/.idea/DJSCommands.iml" />
     </modules>
   </component>
 </project>
