@@ -1,6 +1,6 @@
 {
   "name": "djscommands",
-  "description": "An easy to use slash command handler for Discord.JS",
+  "description": "An easy to use command handler for Discord.JS",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
