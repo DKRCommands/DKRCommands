@@ -97,38 +97,38 @@ class CommandHandler {
 
         const {
             name = fileName,
-            category,
-            commands,
             aliases,
-            init,
-            callback,
-            run,
-            execute,
-            error,
             description,
             slash,
+            permissions,
+            testOnly,
             options = [],
-            testOnly
+            init,
+            callback,
+            error,
+            run,
+            execute
         } = configuration;
 
         if (run || execute)
             throw new Error(`Command located at "${file}" has either a "run" or "execute" function. Please rename that function to "callback".`);
 
-        let names = commands || aliases || [];
+        let names = aliases || [];
         if (!name && (!names || names.length === 0))
-            throw new Error(`Command located at "${file}" does not have a name, commands array, or aliases array set. Please set at lease one property to specify the command name.`);
+            throw new Error(`Command located at "${file}" does not have a name, or aliases array set. Please set at lease one property to specify the command name.`);
         if (typeof names === "string")
             names = [names];
         if (name && !names.includes(name.toLowerCase()))
             names.unshift(name.toLowerCase());
 
-        const missing = [];
-        if (!category)
-            missing.push("Category");
-        if (!description)
-            missing.push("Description");
-        if (missing.length && instance.showWarns)
-            console.warn(`DKRCommands > Command "${names[0]}" does not have the following properties: ${missing}.`);
+        if (permissions)
+            for (const perm of permissions) {
+                if (typeof perm !== "bigint")
+                    throw new Error(`Command located at "${file}" has an invalid permission node: "${perm}". Permissions must be from Discords.js PermissionsBitField instance.`);
+            }
+
+        if (!description && instance.showWarns)
+            console.warn(`DKRCommands > Command "${names[0]}" does not have a description set.`);
 
         if (testOnly && !instance.testServers?.length)
             console.warn(`DKRCommands > Command "${names[0]}" has "testOnly" set to true, but no test servers are defined.`);

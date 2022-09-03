@@ -31,18 +31,16 @@ interface IErrorObject {
 }
 
 interface ICommand {
-    // Only for legacy commands
-    names?: string[] | string;
-    // Require for built-in help command
-    category: string;
+    aliases?: string[] | string;
     description: string;
-    // Required custom check
+    permissions?: bigint[];
     ownerOnly?: boolean;
-    // Required custom check
     guildOnly?: boolean;
     testOnly?: boolean;
     slash?: boolean | "both";
     options?: ApplicationCommandOptionData[];
+
+    init?(client: Client, instance: DKRCommands): void;
 
     callback?(obj: ICallbackObject): void;
 
@@ -52,7 +50,6 @@ interface ICommand {
 interface Options {
     commandsDir: string;
     showWarns?: boolean;
-    // Only for legacy commands
     ignoreBots?: boolean;
     testServers?: string | string[];
     botOwners?: string | string[];

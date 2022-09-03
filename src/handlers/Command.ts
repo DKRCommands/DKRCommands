@@ -10,6 +10,7 @@ export class Command {
     private readonly _client: Client;
     private readonly _names: string[];
     private readonly _description: string;
+    private readonly _permissions: bigint[] | undefined;
     private readonly _ownerOnly: boolean;
     private readonly _guildOnly: boolean;
     private readonly _testOnly: boolean;
@@ -20,6 +21,7 @@ export class Command {
 
     constructor(instance: DKRCommands, client: Client, names: string[], callback: () => void, error: () => void, {
         description,
+        permissions,
         ownerOnly = false,
         guildOnly = false,
         testOnly = false,
@@ -29,6 +31,7 @@ export class Command {
         this._client = client;
         this._names = names;
         this._description = description;
+        this._permissions = permissions;
         this._ownerOnly = ownerOnly;
         this._guildOnly = guildOnly;
         this._testOnly = testOnly;
@@ -59,6 +62,10 @@ export class Command {
 
     get name(): string {
         return this._names[0] || "";
+    }
+
+    get permissions(): bigint[] {
+        return this._permissions || [];
     }
 
     get ownerOnly(): boolean {

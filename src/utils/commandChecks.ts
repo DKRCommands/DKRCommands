@@ -2,7 +2,7 @@ import {
     CategoryChannel, DMChannel,
     Guild,
     GuildMember,
-    NewsChannel, PartialDMChannel, PrivateThreadChannel, PublicThreadChannel,
+    NewsChannel, PartialDMChannel, PermissionsBitField, PrivateThreadChannel, PublicThreadChannel,
     StageChannel,
     TextChannel,
     User, VoiceChannel
@@ -24,7 +24,8 @@ function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Gui
     return !(
         (command.guildOnly && !checkGuildOnly(guild, send)) ||
         (command.slash !== true && command.testOnly && !checkTestOnly(instance, guild)) ||
-        (command.ownerOnly && !checkOwnerOnly(instance, user, send))
+        (command.ownerOnly && !checkOwnerOnly(instance, user, send)) ||
+        (command.permissions.length > 0 && !checkRequiredPermissions(member, command.permissions, send))
     );
 }
 
@@ -64,6 +65,25 @@ function checkOwnerOnly(instance: DKRCommands, user: User, send: (message: strin
         return false;
     } else
         return true;
+}
+
+/**
+ * Checks if the user has the required permissions.
+ * @param member - Discord member
+ * @param permissions - Required permissions for command
+ * @param send - send callback
+ */
+function checkRequiredPermissions(member: GuildMember | null, permissions: bigint[] | undefined, send: (message: string) => void): boolean {
+    for (const perm of permissions || []) {
+        const permission = new PermissionsBitField(perm);
+        if (!member?.permissions.has(permission)) {
+            send(`You must have the **${permission.toArray()}** permission in order to use this command.`);
+
+            return false;
+        }
+    }
+
+    return true;
 }
 
 export {
