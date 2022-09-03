@@ -3,7 +3,7 @@ import { Client } from "discord.js";
 import { ICommand, Options } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
 
-export class DJSCommands extends EventEmitter {
+export class DKRCommands extends EventEmitter {
     private readonly _client: Client;
     private _commandsDir?: string;
     private _showWarns?: boolean;
@@ -47,7 +47,7 @@ export class DJSCommands extends EventEmitter {
         this.typescript = typescript;
 
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
-            throw new Error("DJSCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://docs.wornoffkeys.com/setup-and-options-object");
+            throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://docs.wornoffkeys.com/setup-and-options-object");
 
         if (testServers)
             this._testServers = (typeof testServers === "string") ? [testServers] : testServers;
@@ -57,7 +57,7 @@ export class DJSCommands extends EventEmitter {
         this._commandHandler = new CommandHandler(this, client, this._commandsDir || "", this.typescript);
         this._slashCommands = new SlashCommands(this, true);
 
-        console.log("DJSCommands > Your bot is now running.");
+        console.log("DKRCommands > Your bot is now running.");
     }
 
     get client(): Client {

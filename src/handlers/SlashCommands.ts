@@ -6,18 +6,18 @@ import {
     Client,
     CommandInteractionOptionResolver, GuildMember, TextChannel
 } from "discord.js";
-import { DJSCommands } from "../index";
+import { DKRCommands } from "../index";
 
 /**
  * The class responsible for registering, editing and responding to slash commands.
  */
 export class SlashCommands {
     private readonly client: Client;
-    private readonly instance: DJSCommands;
+    private readonly instance: DKRCommands;
 
     //private commandChecks: Map<String, Function> = new Map();
 
-    constructor(instance: DJSCommands, listen: boolean) {
+    constructor(instance: DKRCommands, listen: boolean) {
         this.instance = instance;
         this.client = instance.client;
 
@@ -103,7 +103,7 @@ export class SlashCommands {
         if (cmd) {
             const optionsChanged = this.didOptionsChange(cmd, options);
             if (cmd.description !== description || cmd.options.length !== options.length || optionsChanged) {
-                console.log(`DJSCommands > Updating${guildId ? " guild" : ""} slash command "${name}"`);
+                console.log(`DKRCommands > Updating${guildId ? " guild" : ""} slash command "${name}"`);
 
                 return commands?.edit(cmd.id, { name, description, options });
             }
@@ -111,7 +111,7 @@ export class SlashCommands {
             return cmd;
         }
         if (commands) {
-            console.log(`DJSCommands > Creating${guildId ? " guild" : ""} slash command "${name}"`);
+            console.log(`DKRCommands > Creating${guildId ? " guild" : ""} slash command "${name}"`);
 
             return await commands.create({ name, description, options });
         }

@@ -9,7 +9,7 @@ import {
     TextChannel,
     User
 } from "discord.js";
-import { DJSCommands } from "../index";
+import { DKRCommands } from "../index";
 
 interface ICallbackObject {
     member: GuildMember;
@@ -18,7 +18,7 @@ interface ICallbackObject {
     args: string[];
     text: string;
     client: Client;
-    instance: DJSCommands;
+    instance: DKRCommands;
     interaction: ChatInputCommandInteraction;
     options: Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">;
     user: User;

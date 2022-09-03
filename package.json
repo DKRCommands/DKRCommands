@@ -1,5 +1,5 @@
 {
-  "name": "djscommands",
+  "name": "dkrcommands",
   "description": "An easy to use command handler for Discord.JS",
   "version": "1.0.1-beta.0",
   "main": "dist/index.js",
@@ -11,9 +11,9 @@
   "keywords": [],
   "author": "Karel Krýda",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/karelkryda/DJSCommands#readme",
-  "repository": "karelkryda/DJSCommands",
-  "bugs": "https://github.com/karelkryda/DJSCommands",
+  "homepage": "https://github.com/karelkryda/DKRCommands#readme",
+  "repository": "karelkryda/DKRCommands",
+  "bugs": "https://github.com/karelkryda/DKRCommands",
   "dependencies": {
     "discord.js": "^14.3.0"
   },

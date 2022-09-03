@@ -1,6 +1,6 @@
 const { join } = require("path");
 const { Client, GatewayIntentBits } = require("discord.js");
-const DJSCommands = require("djscommands");
+const DKRCommands = require("dkrcommands");
 
 const client = new Client({
     intents: [
@@ -10,7 +10,7 @@ const client = new Client({
 });
 
 client.on("ready", () => {
-    new DJSCommands(client, {
+    new DKRCommands(client, {
         // The name of the local folder for your command files
         commandsDir: join(__dirname, "commands"),
         testServers: ["YOUR_SERVER_ID"]

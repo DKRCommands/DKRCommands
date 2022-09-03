@@ -1,12 +1,12 @@
 import { Client } from "discord.js";
-import { DJSCommands } from "../index";
+import { DKRCommands } from "../index";
 import { ICallbackObject, ICommand, IErrorObject } from "../interfaces";
 
 /**
  * A class containing a constructor for individual commands.
  */
 export class Command {
-    private readonly instance: DJSCommands;
+    private readonly instance: DKRCommands;
     private readonly client: Client;
     private readonly names: string[];
     private readonly description: string;
@@ -16,7 +16,7 @@ export class Command {
     public callback: (obj: ICallbackObject) => void;
     public error: (obj: IErrorObject) => void;
 
-    constructor(instance: DJSCommands, client: Client, names: string[], callback: () => void, error: () => void, {
+    constructor(instance: DKRCommands, client: Client, names: string[], callback: () => void, error: () => void, {
         description,
         testOnly = false,
         slash = false
