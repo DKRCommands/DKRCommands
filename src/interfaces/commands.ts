@@ -2,25 +2,25 @@ import {
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
     Client,
-    CommandInteractionOptionResolver,
-    Guild,
+    CommandInteractionOptionResolver, Guild,
     GuildMember,
-    Message,
-    TextChannel,
+    Message, TextChannel,
     User
 } from "discord.js";
 import { DKRCommands } from "../index";
 
 interface ICallbackObject {
-    member: GuildMember;
+    instance: DKRCommands;
+    client: Client;
+    interaction?: ChatInputCommandInteraction;
+    message?: Message;
     guild: Guild | null;
+    member: GuildMember;
     channel: TextChannel;
+    prefix?: string;
     args: string[];
     text: string;
-    client: Client;
-    instance: DKRCommands;
-    interaction: ChatInputCommandInteraction;
-    options: Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">;
+    options?: Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">;
     user: User;
 }
 
@@ -31,13 +31,17 @@ interface IErrorObject {
 }
 
 interface ICommand {
+    // Only for legacy commands
     names?: string[] | string;
+    // Require for built-in help command
     category: string;
     description: string;
+    // Required custom check
     ownerOnly?: boolean;
+    // Required custom check
     guildOnly?: boolean;
     testOnly?: boolean;
-    slash?: boolean;
+    slash?: boolean | "both";
     options?: ApplicationCommandOptionData[];
 
     callback?(obj: ICallbackObject): void;
@@ -48,6 +52,7 @@ interface ICommand {
 interface Options {
     commandsDir: string;
     showWarns?: boolean;
+    // Only for legacy commands
     ignoreBots?: boolean;
     testServers?: string | string[];
     botOwners?: string | string[];

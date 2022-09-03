@@ -7,6 +7,7 @@ import {
     CommandInteractionOptionResolver, GuildMember, TextChannel
 } from "discord.js";
 import { DKRCommands } from "../index";
+import { abilityToRunCommand } from "../utils";
 
 /**
  * The class responsible for registering, editing and responding to slash commands.
@@ -14,8 +15,6 @@ import { DKRCommands } from "../index";
 export class SlashCommands {
     private readonly client: Client;
     private readonly instance: DKRCommands;
-
-    //private commandChecks: Map<String, Function> = new Map();
 
     constructor(instance: DKRCommands, listen: boolean) {
         this.instance = instance;
@@ -35,7 +34,9 @@ export class SlashCommands {
                 if (!interaction.isChatInputCommand())
                     return;
 
-                const { commandName, options } = interaction;
+                const { commandName, guild, user, channelId, options } = interaction;
+                const member = interaction.member as GuildMember;
+                const channel = guild?.channels.cache.get(channelId) || null;
                 const command = this.instance.commandHandler.getCommand(commandName);
                 if (!command)
                     return interaction.reply({
@@ -47,6 +48,14 @@ export class SlashCommands {
                 options.data.forEach(({ value }) => {
                     args.push(String(value));
                 });
+
+                if (!abilityToRunCommand(this.instance, command, guild, channel, member, user, (content) => {
+                    interaction.reply({
+                        content,
+                        ephemeral: this.instance.ephemeral
+                    }).then();
+                }))
+                    return;
 
                 this.invokeCommand(interaction, commandName, options, args).then();
             });
@@ -67,16 +76,16 @@ export class SlashCommands {
             return;
 
         await command.callback({
-            member: interaction.member as GuildMember,
+            instance: this.instance,
+            client: this.client,
+            interaction,
             guild: interaction.guild,
+            member: interaction.member as GuildMember,
             channel: interaction.channel as TextChannel,
             args,
             text: args.join(" "),
-            client: this.client,
-            instance: this.instance,
-            interaction,
             options,
-            user: interaction.user,
+            user: interaction.user
         });
     }
 

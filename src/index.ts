@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { Client } from "discord.js";
+import { Client, Guild } from "discord.js";
 import { ICommand, Options } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
 
@@ -60,6 +60,13 @@ export class DKRCommands extends EventEmitter {
         console.log("DKRCommands > Your bot is now running.");
     }
 
+    // TODO: ability to get and set per server prefixes
+    public getPrefix(guild: Guild | null): string {
+        // TODO: remove then
+        console.log(guild?.name);
+        return /*this.prefixes[guild] || */"!";
+    }
+
     get client(): Client {
         return this._client;
     }
@@ -68,12 +75,20 @@ export class DKRCommands extends EventEmitter {
         return this._showWarns || false;
     }
 
+    get ignoreBots(): boolean {
+        return this._ignoreBots || false;
+    }
+
     get ephemeral(): boolean {
         return this._ephemeral || false;
     }
 
     get testServers(): string[] {
         return this._testServers || [];
+    }
+
+    get botOwners(): string[] {
+        return this._botOwners || [];
     }
 
     get commandHandler(): CommandHandler {

@@ -2,7 +2,7 @@ import { existsSync } from "fs";
 import { Client } from "discord.js";
 import { DKRCommands } from "../index";
 import { Command } from "./Command";
-import { getAllFiles } from "../utils";
+import { abilityToRunCommand, getAllFiles } from "../utils";
 
 /**
  * The class responsible for checking and registering commands.
@@ -36,6 +36,49 @@ class CommandHandler {
 
             for (const [file, fileName] of files)
                 await this.registerCommand(instance, client, file, fileName);
+
+            client.on("messageCreate", async (message) => {
+                const guild = message.guild;
+                const prefix = instance.getPrefix(guild).toLowerCase();
+
+                if (instance.ignoreBots && message.author.bot)
+                    return;
+                if (message.content.toLowerCase().startsWith(prefix)) {
+                    const args = message.content.substring(prefix.length).replace(/\s+/g, " ").trim().split(" ");
+                    const commandName = args.shift();
+                    if (!commandName)
+                        return;
+
+                    const command = this.commands.get(commandName.toLowerCase());
+                    if (!command || command.slash === true)
+                        return;
+
+                    const { member, author: user, channel } = message;
+                    if (!abilityToRunCommand(instance, command, guild, channel, member, user, (content) => {
+                        message.reply({
+                            content
+                        }).then();
+                    }))
+                        return;
+
+                    try {
+                        command.execute(message, args).then();
+                    } catch (e) {
+                        if (command.error)
+                            command.error({
+                                command: command.name,
+                                message,
+                                info: {
+                                    error: e,
+                                },
+                            });
+                        else {
+                            message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
+                            console.error(e);
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -90,8 +133,8 @@ class CommandHandler {
         if (testOnly && !instance.testServers?.length)
             console.warn(`DKRCommands > Command "${names[0]}" has "testOnly" set to true, but no test servers are defined.`);
 
-        if (typeof slash !== "boolean")
-            throw new Error(`DKRCommands > Command "${names[0]}" has a "slash" property that is not boolean "true".`);
+        if (typeof slash !== "boolean" && slash !== "both")
+            throw new Error(`DKRCommands > Command "${names[0]}" has a "slash" property that is not boolean "true" or string "both".`);
         if (!slash && options.length)
             throw new Error(`DKRCommands > Command "${names[0]}" has an "options" property but is not a slash command.`);
         if (slash) {
