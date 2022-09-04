@@ -1,4 +1,4 @@
-import { Client, GuildMember, Message, TextChannel } from "discord.js";
+import { Client, GuildMember, Message, MessageReaction, TextChannel } from "discord.js";
 import { DKRCommands } from "../index";
 import { ICallbackObject, ICommand, IErrorObject } from "../interfaces";
 
@@ -16,10 +16,10 @@ export class Command {
     private readonly _testOnly: boolean;
     private readonly _slash: boolean | "both";
 
-    public callback: (obj: ICallbackObject) => void;
+    public callback: (obj: ICallbackObject) => void | string | object;
     public error: (obj: IErrorObject) => void;
 
-    constructor(instance: DKRCommands, client: Client, names: string[], callback: () => void, error: () => void, {
+    constructor(instance: DKRCommands, client: Client, names: string[], callback: () => void | string | object, error: () => void, {
         description,
         permissions,
         ownerOnly = false,
@@ -46,7 +46,7 @@ export class Command {
      * @param args - command arguments
      */
     public async execute(message: Message, args: string[]): Promise<void> {
-        await this.callback({
+        const reply = await this.callback({
             instance: this._instance,
             client: this._client,
             message,
@@ -58,6 +58,15 @@ export class Command {
             text: args.join(" "),
             user: message.author
         });
+
+        if (reply && !(reply instanceof Message) && !(reply instanceof MessageReaction)) {
+            if (typeof reply === "string")
+                message.reply({
+                    content: reply,
+                }).then();
+            else if (typeof reply === "object")
+                message.reply(reply).then();
+        }
     }
 
     get name(): string {

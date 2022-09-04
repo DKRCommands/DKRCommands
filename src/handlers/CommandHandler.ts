@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import { Client } from "discord.js";
+import { Client, PermissionsBitField } from "discord.js";
 import { DKRCommands } from "../index";
 import { Command } from "./Command";
 import { abilityToRunCommand, getAllFiles } from "../utils";
@@ -123,7 +123,7 @@ class CommandHandler {
 
         if (permissions)
             for (const perm of permissions) {
-                if (typeof perm !== "bigint")
+                if (typeof perm !== "bigint" || !(new PermissionsBitField(perm).toArray().length))
                     throw new Error(`Command located at "${file}" has an invalid permission node: "${perm}". Permissions must be from Discords.js PermissionsBitField instance.`);
             }
 

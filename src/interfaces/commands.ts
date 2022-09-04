@@ -42,13 +42,14 @@ interface ICommand {
 
     init?(client: Client, instance: DKRCommands): void;
 
-    callback?(obj: ICallbackObject): void;
+    callback?(obj: ICallbackObject): void | string | object;
 
     error?(obj: IErrorObject): void;
 }
 
 interface Options {
     commandsDir: string;
+    prefix?: string;
     showWarns?: boolean;
     ignoreBots?: boolean;
     testServers?: string | string[];

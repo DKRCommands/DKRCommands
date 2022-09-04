@@ -6,6 +6,7 @@ import { CommandHandler, SlashCommands } from "./handlers";
 export class DKRCommands extends EventEmitter {
     private readonly _client: Client;
     private _commandsDir?: string;
+    private prefix?: string;
     private _showWarns?: boolean;
     private _ignoreBots?: boolean;
     private _ephemeral?: boolean;
@@ -24,12 +25,19 @@ export class DKRCommands extends EventEmitter {
         this.checkAndSetup(client, options).then();
     }
 
+    /**
+     * Checks the parameters of the options object and creates and initializes the DKRCommands components.
+     * @param client - Discord client
+     * @param options - DKRCommands options object
+     * @private
+     */
     private async checkAndSetup(client: Client, options?: Options) {
         if (!client)
             throw new Error("No Discord JS Client provided as first argument!");
 
         const {
             commandsDir,
+            prefix,
             showWarns,
             ignoreBots,
             testServers,
@@ -40,6 +48,7 @@ export class DKRCommands extends EventEmitter {
         } = options || {};
 
         this._commandsDir = commandsDir;
+        this.prefix = prefix;
         this._showWarns = showWarns;
         this._ignoreBots = ignoreBots;
         this._ephemeral = ephemeral;
@@ -60,11 +69,15 @@ export class DKRCommands extends EventEmitter {
         console.log("DKRCommands > Your bot is now running.");
     }
 
+    /**
+     * Returns either a personalized prefix for the given server or the default prefix.
+     * @param guild - Discord guild
+     */
     // TODO: ability to get and set per server prefixes
     public getPrefix(guild: Guild | null): string {
         // TODO: remove then
         console.log(guild?.name);
-        return /*this.prefixes[guild] || */"!";
+        return /*this.prefixes[guild] || */this.prefix || "!";
     }
 
     get client(): Client {

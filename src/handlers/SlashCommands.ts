@@ -1,10 +1,11 @@
+import { isDeepStrictEqual } from "util";
 import {
     ApplicationCommand,
     ApplicationCommandOption,
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
     Client,
-    CommandInteractionOptionResolver, GuildMember, TextChannel
+    CommandInteractionOptionResolver, GuildMember, InteractionResponse, Message, TextChannel
 } from "discord.js";
 import { DKRCommands } from "../index";
 import { abilityToRunCommand } from "../utils";
@@ -75,7 +76,7 @@ export class SlashCommands {
         if (!command || !command.callback)
             return;
 
-        await command.callback({
+        const reply = await command.callback({
             instance: this.instance,
             client: this.client,
             interaction,
@@ -87,6 +88,15 @@ export class SlashCommands {
             options,
             user: interaction.user
         });
+
+        if (reply && !(reply instanceof InteractionResponse) && !(reply instanceof Message)) {
+            if (typeof reply === "string")
+                interaction.reply({
+                    content: reply,
+                }).then();
+            else if (typeof reply === "object")
+                interaction.reply(reply).then();
+        }
     }
 
     /**
@@ -134,11 +144,7 @@ export class SlashCommands {
      */
     private didOptionsChange(command: ApplicationCommand, options: (ApplicationCommandOptionData & { required?: boolean })[]): boolean {
         return (command.options?.filter((opt: ApplicationCommandOption & { nameLocalized?: string | undefined, descriptionLocalized?: string | undefined, required?: boolean, options?: ApplicationCommandOptionData[] }, index) => {
-            return (
-                opt?.required !== options[index]?.required &&
-                opt?.name !== options[index]?.name &&
-                opt?.options?.length !== options.length
-            );
+            return !isDeepStrictEqual(JSON.parse(JSON.stringify(opt)), options[index]);
         }).length !== 0);
     }
 }
