@@ -94,12 +94,14 @@ export class DKRCommands extends EventEmitter {
      */
     public async getPrefix(guild: Guild | null): Promise<string> {
         let prefix;
-        // Use WOKCommands database schema
-        if (this.databaseBackwardCompatibility)
-            prefix = (await PrefixModel.findOne({ _id: guild?.id }))?.prefix;
-        // Use DKRCommands database schema
-        else
-            prefix = (await GuildModel.findOne({ server: guild?.id }))?.prefix;
+        if (this.mongoUri) {
+            // Use WOKCommands database schema
+            if (this.databaseBackwardCompatibility)
+                prefix = (await PrefixModel.findOne({ _id: guild?.id }))?.prefix;
+            // Use DKRCommands database schema
+            else
+                prefix = (await GuildModel.findOne({ server: guild?.id }))?.prefix;
+        }
 
         return prefix || this.prefix || "!";
     }
@@ -111,12 +113,15 @@ export class DKRCommands extends EventEmitter {
      */
     public async setPrefix(guild: Guild, newPrefix: string): Promise<string> {
         let prefix;
-        // Use WOKCommands database schema
-        if (this.databaseBackwardCompatibility)
-            prefix = (await PrefixModel.findOneAndUpdate({ _id: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
-        // Use DKRCommands database schema
-        else
-            prefix = (await GuildModel.findOneAndUpdate({ server: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
+        if (this.mongoUri) {
+            // Use WOKCommands database schema
+            if (this.databaseBackwardCompatibility)
+                prefix = (await PrefixModel.findOneAndUpdate({ _id: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
+            // Use DKRCommands database schema
+            else
+                prefix = (await GuildModel.findOneAndUpdate({ server: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
+        } else
+            throw new Error("No MongoDB connection established.");
 
         return prefix || this.prefix || "!";
     }
