@@ -1,7 +1,9 @@
 import { EventEmitter } from "events";
 import { Client, Guild } from "discord.js";
+import { connect, ConnectOptions } from "mongoose";
 import { ICommand, Options } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
+import { GuildModel, PrefixModel } from "./database/models";
 
 export class DKRCommands extends EventEmitter {
     private readonly _client: Client;
@@ -14,6 +16,9 @@ export class DKRCommands extends EventEmitter {
     private _testServers?: string[];
     private _botOwners?: string[];
     private typescript?: boolean;
+    private mongoUri?: string;
+    private dbOptions?: ConnectOptions;
+    private databaseBackwardCompatibility?: boolean;
 
     private _commandHandler?: CommandHandler;
     private _slashCommands?: SlashCommands;
@@ -44,7 +49,10 @@ export class DKRCommands extends EventEmitter {
             botOwners,
             ephemeral,
             debug,
-            typescript
+            typescript,
+            mongoUri,
+            dbOptions,
+            databaseBackwardCompatibility
         } = options || {};
 
         this._commandsDir = commandsDir;
@@ -54,6 +62,17 @@ export class DKRCommands extends EventEmitter {
         this._ephemeral = ephemeral;
         this._debug = debug;
         this.typescript = typescript;
+        this.mongoUri = mongoUri;
+        this.dbOptions = dbOptions;
+        this.databaseBackwardCompatibility = databaseBackwardCompatibility;
+
+        if (mongoUri)
+            await connect(mongoUri, {
+                keepAlive: true,
+                ...dbOptions,
+            });
+        else if (showWarns)
+            console.warn("DKRCommands > No MongoDB connection URI provided. Some features might not work! See this for more details:\nhttps://karel-kryda.gitbook.io/dkrcommands/databases/mongodb");
 
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
             throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://docs.wornoffkeys.com/setup-and-options-object");
@@ -73,11 +92,33 @@ export class DKRCommands extends EventEmitter {
      * Returns either a personalized prefix for the given server or the default prefix.
      * @param guild - Discord guild
      */
-    // TODO: ability to get and set per server prefixes
-    public getPrefix(guild: Guild | null): string {
-        // TODO: remove then
-        console.log(guild?.name);
-        return /*this.prefixes[guild] || */this.prefix || "!";
+    public async getPrefix(guild: Guild | null): Promise<string> {
+        let prefix;
+        // Use WOKCommands database schema
+        if (this.databaseBackwardCompatibility)
+            prefix = (await PrefixModel.findOne({ _id: guild?.id }))?.prefix;
+        // Use DKRCommands database schema
+        else
+            prefix = (await GuildModel.findOne({ server: guild?.id }))?.prefix;
+
+        return prefix || this.prefix || "!";
+    }
+
+    /**
+     * Sets a new prefix for the given server.
+     * @param guild - Discord guild
+     * @param newPrefix - New prefix
+     */
+    public async setPrefix(guild: Guild, newPrefix: string): Promise<string> {
+        let prefix;
+        // Use WOKCommands database schema
+        if (this.databaseBackwardCompatibility)
+            prefix = (await PrefixModel.findOneAndUpdate({ _id: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
+        // Use DKRCommands database schema
+        else
+            prefix = (await GuildModel.findOneAndUpdate({ server: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
+
+        return prefix || this.prefix || "!";
     }
 
     get client(): Client {

@@ -8,6 +8,7 @@ import {
     User
 } from "discord.js";
 import { DKRCommands } from "../index";
+import { ConnectOptions } from "mongoose";
 
 interface ICallbackObject {
     instance: DKRCommands;
@@ -57,6 +58,9 @@ interface Options {
     ephemeral?: boolean;
     debug?: boolean;
     typescript?: boolean;
+    mongoUri?: string;
+    dbOptions?: ConnectOptions;
+    databaseBackwardCompatibility?: boolean;
 }
 
 export {

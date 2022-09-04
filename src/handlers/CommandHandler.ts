@@ -39,7 +39,7 @@ class CommandHandler {
 
             client.on("messageCreate", async (message) => {
                 const guild = message.guild;
-                const prefix = instance.getPrefix(guild).toLowerCase();
+                const prefix = (await instance.getPrefix(guild)).toLowerCase();
 
                 if (instance.ignoreBots && message.author.bot)
                     return;

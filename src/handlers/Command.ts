@@ -53,7 +53,7 @@ export class Command {
             guild: message.guild,
             member: message.member as GuildMember,
             channel: message.channel as TextChannel,
-            prefix: this._instance.getPrefix(message.guild),
+            prefix: await this._instance.getPrefix(message.guild),
             args,
             text: args.join(" "),
             user: message.author
