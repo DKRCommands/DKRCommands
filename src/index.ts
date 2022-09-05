@@ -84,6 +84,9 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
             throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://docs.wornoffkeys.com/setup-and-options-object");
 
+        if (this._errorMessages === false && showWarns)
+            console.warn("DKRCommands > Default error messages will not be sent, remember to listen for all required events. See this for more details:\nhttps://karel-kryda.gitbook.io/dkrcommands/useful-information/error-messages-customization");
+
         if (testServers)
             this._testServers = (typeof testServers === "string") ? [testServers] : testServers;
         if (botOwners)
