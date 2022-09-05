@@ -39,11 +39,21 @@ export class SlashCommands {
                 const member = interaction.member as GuildMember;
                 const channel = guild?.channels.cache.get(channelId) || null;
                 const command = this.instance.commandHandler.getCommand(commandName);
-                if (!command)
-                    return interaction.reply({
-                        content: "This slash command is not properly registered.",
-                        ephemeral: this.instance.ephemeral
-                    }).then();
+                if (!command) {
+                    if (this.instance.errorMessages)
+                        interaction.reply({
+                            content: "This slash command is not properly registered.",
+                            ephemeral: this.instance.ephemeral
+                        }).then();
+                    this.instance.emit("invalidSlashCommand", this.instance, guild, (content: string) => {
+                        interaction.reply({
+                            content,
+                            ephemeral: this.instance.ephemeral
+                        }).then();
+                    });
+
+                    return;
+                }
 
                 const args: string[] = [];
                 options.data.forEach(({ value }) => {

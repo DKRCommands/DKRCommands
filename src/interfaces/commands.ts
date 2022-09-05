@@ -52,6 +52,7 @@ interface Options {
     commandsDir: string;
     prefix?: string;
     showWarns?: boolean;
+    errorMessages?: boolean;
     ignoreBots?: boolean;
     testServers?: string | string[];
     botOwners?: string | string[];

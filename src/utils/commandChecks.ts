@@ -22,21 +22,24 @@ import { Command } from "../handlers";
  */
 function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Guild | null, channel: CategoryChannel | NewsChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, member: GuildMember | null, user: User, send: (message: string) => void): boolean {
     return !(
-        (command.guildOnly && !checkGuildOnly(guild, send)) ||
+        (command.guildOnly && !checkGuildOnly(instance, guild, send)) ||
         (command.slash !== true && command.testOnly && !checkTestOnly(instance, guild)) ||
-        (command.ownerOnly && !checkOwnerOnly(instance, user, send)) ||
-        (command.permissions.length > 0 && !checkRequiredPermissions(member, command.permissions, send))
+        (command.ownerOnly && !checkOwnerOnly(instance, guild, user, send)) ||
+        (command.permissions.length > 0 && !checkRequiredPermissions(instance, guild, member, command.permissions, send))
     );
 }
 
 /**
  * Checks if the guildOnly command is run only from the server.
+ * @param instance - DKRCommands instance
  * @param guild - Discord guild
  * @param send - send callback
  */
-function checkGuildOnly(guild: Guild | null, send: (message: string) => void): boolean {
+function checkGuildOnly(instance: DKRCommands, guild: Guild | null, send: (message: string) => void): boolean {
     if (!guild) {
-        send("This command can only be used within a server.");
+        if (instance.errorMessages)
+            send("This command can only be used within a server.");
+        instance.emit("commandGuildOnly", instance, send);
 
         return false;
     } else
@@ -55,12 +58,15 @@ function checkTestOnly(instance: DKRCommands, guild: Guild | null): boolean {
 /**
  * Checks if the ownerOnly command is run only by an authorized user.
  * @param instance - DKRCommands instance
+ * @param guild - Discord guild
  * @param user - Discord user
  * @param send - send callback
  */
-function checkOwnerOnly(instance: DKRCommands, user: User, send: (message: string) => void): boolean {
+function checkOwnerOnly(instance: DKRCommands, guild: Guild | null, user: User, send: (message: string) => void): boolean {
     if (!instance.botOwners.includes(user.id)) {
-        send("Only the bot owner can run this command.");
+        if (instance.errorMessages)
+            send("Only the bot owner can run this command.");
+        instance.emit("commandOwnerOnly", instance, guild, send);
 
         return false;
     } else
@@ -69,15 +75,19 @@ function checkOwnerOnly(instance: DKRCommands, user: User, send: (message: strin
 
 /**
  * Checks if the user has the required permissions.
+ * @param instance - DKRCommands instance
+ * @param guild - Discord guild
  * @param member - Discord member
  * @param permissions - Required permissions for command
  * @param send - send callback
  */
-function checkRequiredPermissions(member: GuildMember | null, permissions: bigint[] | undefined, send: (message: string) => void): boolean {
+function checkRequiredPermissions(instance: DKRCommands, guild: Guild | null, member: GuildMember | null, permissions: bigint[] | undefined, send: (message: string) => void): boolean {
     for (const perm of permissions || []) {
         const permission = new PermissionsBitField(perm);
         if (!member?.permissions.has(permission)) {
-            send(`You must have the **${permission.toArray()}** permission in order to use this command.`);
+            if (instance.errorMessages)
+                send(`You must have the **${permission.toArray()}** permission in order to use this command.`);
+            instance.emit("commandMissingPermission", instance, guild, permission.toArray().toString(), send);
 
             return false;
         }

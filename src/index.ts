@@ -1,15 +1,16 @@
-import { EventEmitter } from "events";
+import { TypedEmitter } from "tiny-typed-emitter";
 import { Client, Guild } from "discord.js";
-import { connect, ConnectOptions } from "mongoose";
-import { ICommand, Options } from "./interfaces";
+import { connect, Connection, connection, ConnectionStates, ConnectOptions } from "mongoose";
+import { DKRCommandsEvents, ICommand, Options } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
 import { GuildModel, LanguageModel, PrefixModel } from "./database/models";
 
-export class DKRCommands extends EventEmitter {
+export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     private readonly _client: Client;
     private _commandsDir?: string;
     private prefix?: string;
     private _showWarns?: boolean;
+    private _errorMessages?: boolean;
     private _ignoreBots?: boolean;
     private _ephemeral?: boolean;
     private _debug?: boolean;
@@ -19,6 +20,7 @@ export class DKRCommands extends EventEmitter {
     private mongoUri?: string;
     private dbOptions?: ConnectOptions;
     private databaseBackwardCompatibility?: boolean;
+    private _mongooseConnection?: Connection;
 
     private _commandHandler?: CommandHandler;
     private _slashCommands?: SlashCommands;
@@ -44,6 +46,7 @@ export class DKRCommands extends EventEmitter {
             commandsDir,
             prefix,
             showWarns,
+            errorMessages,
             ignoreBots,
             testServers,
             botOwners,
@@ -58,6 +61,7 @@ export class DKRCommands extends EventEmitter {
         this._commandsDir = commandsDir;
         this.prefix = prefix;
         this._showWarns = showWarns;
+        this._errorMessages = errorMessages;
         this._ignoreBots = ignoreBots;
         this._ephemeral = ephemeral;
         this._debug = debug;
@@ -66,12 +70,15 @@ export class DKRCommands extends EventEmitter {
         this.dbOptions = dbOptions;
         this.databaseBackwardCompatibility = databaseBackwardCompatibility;
 
-        if (mongoUri)
+        if (mongoUri) {
             await connect(mongoUri, {
                 keepAlive: true,
                 ...dbOptions,
             });
-        else if (showWarns)
+
+            this._mongooseConnection = connection;
+            this.emit("databaseConnected", connection, connection.readyState);
+        } else if (showWarns)
             console.warn("DKRCommands > No MongoDB connection URI provided. Some features might not work! See this for more details:\nhttps://karel-kryda.gitbook.io/dkrcommands/databases/mongodb");
 
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
@@ -94,7 +101,7 @@ export class DKRCommands extends EventEmitter {
      */
     public async getLanguage(guild: Guild): Promise<string> {
         let language;
-        if (this.mongoUri) {
+        if (this.isDBConnected()) {
             // Use WOKCommands database schema
             if (this.databaseBackwardCompatibility)
                 language = (await LanguageModel.findOne({ _id: guild?.id }))?.language;
@@ -113,7 +120,7 @@ export class DKRCommands extends EventEmitter {
      */
     public async setLanguage(guild: Guild, newLanguage: string): Promise<string> {
         let language;
-        if (this.mongoUri) {
+        if (this.isDBConnected()) {
             // Use WOKCommands database schema
             if (this.databaseBackwardCompatibility)
                 language = (await LanguageModel.findOneAndUpdate({ _id: guild.id }, { language: newLanguage }, { new: true }))?.language;
@@ -132,7 +139,7 @@ export class DKRCommands extends EventEmitter {
      */
     public async getPrefix(guild: Guild | null): Promise<string> {
         let prefix;
-        if (this.mongoUri) {
+        if (this.isDBConnected()) {
             // Use WOKCommands database schema
             if (this.databaseBackwardCompatibility)
                 prefix = (await PrefixModel.findOne({ _id: guild?.id }))?.prefix;
@@ -151,7 +158,7 @@ export class DKRCommands extends EventEmitter {
      */
     public async setPrefix(guild: Guild, newPrefix: string): Promise<string> {
         let prefix;
-        if (this.mongoUri) {
+        if (this.isDBConnected()) {
             // Use WOKCommands database schema
             if (this.databaseBackwardCompatibility)
                 prefix = (await PrefixModel.findOneAndUpdate({ _id: guild.id }, { prefix: newPrefix }, { new: true }))?.prefix;
@@ -164,12 +171,24 @@ export class DKRCommands extends EventEmitter {
         return prefix || this.prefix || "!";
     }
 
+    /**
+     * Checks if the database is connected.
+     * @private
+     */
+    private isDBConnected(): boolean {
+        return this._mongooseConnection?.readyState === ConnectionStates.connected;
+    }
+
     get client(): Client {
         return this._client;
     }
 
     get showWarns(): boolean {
         return this._showWarns || false;
+    }
+
+    get errorMessages(): boolean {
+        return this._errorMessages || true;
     }
 
     get ignoreBots(): boolean {
@@ -186,6 +205,10 @@ export class DKRCommands extends EventEmitter {
 
     get botOwners(): string[] {
         return this._botOwners || [];
+    }
+
+    get mongooseConnection(): Connection | undefined {
+        return this._mongooseConnection;
     }
 
     get commandHandler(): CommandHandler {

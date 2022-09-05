@@ -16,7 +16,8 @@
   "bugs": "https://github.com/karelkryda/DKRCommands",
   "dependencies": {
     "discord.js": "^14.3.0",
-    "mongoose": "^6.5.4"
+    "mongoose": "^6.5.4",
+    "tiny-typed-emitter": "^2.1.0"
   },
   "devDependencies": {
     "@types/node": "^18.7.15",

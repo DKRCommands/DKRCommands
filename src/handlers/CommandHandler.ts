@@ -64,6 +64,7 @@ class CommandHandler {
                     try {
                         command.execute(message, args).then();
                     } catch (e) {
+                        //TODO: remove this in favor of global events
                         if (command.error)
                             command.error({
                                 command: command.name,
@@ -73,9 +74,14 @@ class CommandHandler {
                                 },
                             });
                         else {
-                            message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
+                            if (instance.errorMessages)
+                                message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
                             console.error(e);
                         }
+
+                        instance.emit("commandException", instance, guild, command, e as Error, (content: string) => {
+                            message.reply(content).then();
+                        });
                     }
                 }
             });
