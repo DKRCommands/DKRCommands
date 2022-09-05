@@ -3,7 +3,7 @@ import { Client, Guild } from "discord.js";
 import { connect, ConnectOptions } from "mongoose";
 import { ICommand, Options } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
-import { GuildModel, PrefixModel } from "./database/models";
+import { GuildModel, LanguageModel, PrefixModel } from "./database/models";
 
 export class DKRCommands extends EventEmitter {
     private readonly _client: Client;
@@ -86,6 +86,44 @@ export class DKRCommands extends EventEmitter {
         this._slashCommands = new SlashCommands(this, true);
 
         console.log("DKRCommands > Your bot is now running.");
+    }
+
+    /**
+     * Returns either a language for the given server or the default language.
+     * @param guild - Discord guild
+     */
+    public async getLanguage(guild: Guild): Promise<string> {
+        let language;
+        if (this.mongoUri) {
+            // Use WOKCommands database schema
+            if (this.databaseBackwardCompatibility)
+                language = (await LanguageModel.findOne({ _id: guild?.id }))?.language;
+            // Use DKRCommands database schema
+            else
+                language = (await GuildModel.findOne({ server: guild?.id }))?.language;
+        }
+
+        return language || "english";
+    }
+
+    /**
+     * Sets a new language for the given server.
+     * @param guild - Discord guild
+     * @param newLanguage - New language
+     */
+    public async setLanguage(guild: Guild, newLanguage: string): Promise<string> {
+        let language;
+        if (this.mongoUri) {
+            // Use WOKCommands database schema
+            if (this.databaseBackwardCompatibility)
+                language = (await LanguageModel.findOneAndUpdate({ _id: guild.id }, { language: newLanguage }, { new: true }))?.language;
+            // Use DKRCommands database schema
+            else
+                language = (await GuildModel.findOneAndUpdate({ server: guild.id }, { language: newLanguage }, { new: true }))?.language;
+        } else
+            throw new Error("No MongoDB connection established.");
+
+        return language || "english";
     }
 
     /**

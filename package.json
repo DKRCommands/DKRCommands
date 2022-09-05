@@ -1,7 +1,7 @@
 {
   "name": "dkrcommands",
   "description": "An easy to use command handler for Discord.JS",
-  "version": "1.0.1-beta.0",
+  "version": "1.0.0-beta.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -19,7 +19,7 @@
     "mongoose": "^6.5.4"
   },
   "devDependencies": {
-    "@types/node": "^18.7.14",
+    "@types/node": "^18.7.15",
     "@typescript-eslint/eslint-plugin": "^5.36.1",
     "eslint": "^8.23.0",
     "ts-node": "^10.9.1",
