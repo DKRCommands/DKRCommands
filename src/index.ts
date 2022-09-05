@@ -188,7 +188,10 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     }
 
     get errorMessages(): boolean {
-        return this._errorMessages || true;
+        if (typeof this._errorMessages === "boolean")
+            return this._errorMessages;
+        else
+            return true;
     }
 
     get ignoreBots(): boolean {

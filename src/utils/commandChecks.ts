@@ -20,7 +20,7 @@ import { Command } from "../handlers";
  * @param user - Discord user
  * @param send - send callback
  */
-function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Guild | null, channel: CategoryChannel | NewsChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, member: GuildMember | null, user: User, send: (message: string) => void): boolean {
+function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Guild | null, channel: CategoryChannel | NewsChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, member: GuildMember | null, user: User, send: (reply: string | object) => void): boolean {
     return !(
         (command.guildOnly && !checkGuildOnly(instance, guild, send)) ||
         (command.slash !== true && command.testOnly && !checkTestOnly(instance, guild)) ||
@@ -35,7 +35,7 @@ function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Gui
  * @param guild - Discord guild
  * @param send - send callback
  */
-function checkGuildOnly(instance: DKRCommands, guild: Guild | null, send: (message: string) => void): boolean {
+function checkGuildOnly(instance: DKRCommands, guild: Guild | null, send: (reply: string | object) => void): boolean {
     if (!guild) {
         if (instance.errorMessages)
             send("This command can only be used within a server.");
@@ -62,7 +62,7 @@ function checkTestOnly(instance: DKRCommands, guild: Guild | null): boolean {
  * @param user - Discord user
  * @param send - send callback
  */
-function checkOwnerOnly(instance: DKRCommands, guild: Guild | null, user: User, send: (message: string) => void): boolean {
+function checkOwnerOnly(instance: DKRCommands, guild: Guild | null, user: User, send: (reply: string | object) => void): boolean {
     if (!instance.botOwners.includes(user.id)) {
         if (instance.errorMessages)
             send("Only the bot owner can run this command.");
@@ -81,7 +81,7 @@ function checkOwnerOnly(instance: DKRCommands, guild: Guild | null, user: User, 
  * @param permissions - Required permissions for command
  * @param send - send callback
  */
-function checkRequiredPermissions(instance: DKRCommands, guild: Guild | null, member: GuildMember | null, permissions: bigint[] | undefined, send: (message: string) => void): boolean {
+function checkRequiredPermissions(instance: DKRCommands, guild: Guild | null, member: GuildMember | null, permissions: bigint[] | undefined, send: (reply: string | object) => void): boolean {
     for (const perm of permissions || []) {
         const permission = new PermissionsBitField(perm);
         if (!member?.permissions.has(permission)) {

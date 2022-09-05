@@ -54,10 +54,8 @@ class CommandHandler {
                         return;
 
                     const { member, author: user, channel } = message;
-                    if (!abilityToRunCommand(instance, command, guild, channel, member, user, (content) => {
-                        message.reply({
-                            content
-                        }).then();
+                    if (!abilityToRunCommand(instance, command, guild, channel, member, user, (reply: string | object) => {
+                        message.reply(reply).then();
                     }))
                         return;
 
@@ -79,8 +77,8 @@ class CommandHandler {
                             console.error(e);
                         }
 
-                        instance.emit("commandException", instance, guild, command, e as Error, (content: string) => {
-                            message.reply(content).then();
+                        instance.emit("commandException", instance, guild, command, e as Error, (reply: string | object) => {
+                            message.reply(reply).then();
                         });
                     }
                 }

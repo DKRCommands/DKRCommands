@@ -45,11 +45,17 @@ export class SlashCommands {
                             content: "This slash command is not properly registered.",
                             ephemeral: this.instance.ephemeral
                         }).then();
-                    this.instance.emit("invalidSlashCommand", this.instance, guild, (content: string) => {
-                        interaction.reply({
-                            content,
-                            ephemeral: this.instance.ephemeral
-                        }).then();
+                    this.instance.emit("invalidSlashCommand", this.instance, guild, (reply: string | object) => {
+                        if (typeof reply === "string")
+                            interaction.reply({
+                                content: reply,
+                                ephemeral: this.instance.ephemeral
+                            }).then();
+                        else
+                            interaction.reply({
+                                ephemeral: this.instance.ephemeral,
+                                ...reply
+                            }).then();
                     });
 
                     return;
@@ -60,11 +66,17 @@ export class SlashCommands {
                     args.push(String(value));
                 });
 
-                if (!abilityToRunCommand(this.instance, command, guild, channel, member, user, (content) => {
-                    interaction.reply({
-                        content,
-                        ephemeral: this.instance.ephemeral
-                    }).then();
+                if (!abilityToRunCommand(this.instance, command, guild, channel, member, user, (reply: string | object) => {
+                    if (typeof reply === "string")
+                        interaction.reply({
+                            content: reply,
+                            ephemeral: this.instance.ephemeral
+                        }).then();
+                    else
+                        interaction.reply({
+                            ephemeral: this.instance.ephemeral,
+                            ...reply
+                        }).then();
                 }))
                     return;
 
