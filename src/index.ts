@@ -19,7 +19,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     private typescript?: boolean;
     private mongoUri?: string;
     private dbOptions?: ConnectOptions;
-    private databaseBackwardCompatibility?: boolean;
+    private _databaseBackwardCompatibility?: boolean;
     private _mongooseConnection?: Connection;
 
     private _commandHandler?: CommandHandler;
@@ -68,7 +68,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         this.typescript = typescript;
         this.mongoUri = mongoUri;
         this.dbOptions = dbOptions;
-        this.databaseBackwardCompatibility = databaseBackwardCompatibility;
+        this._databaseBackwardCompatibility = databaseBackwardCompatibility;
 
         if (mongoUri) {
             await connect(mongoUri, {
@@ -176,9 +176,8 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
     /**
      * Checks if the database is connected.
-     * @private
      */
-    private isDBConnected(): boolean {
+    public isDBConnected(): boolean {
         return this._mongooseConnection?.readyState === ConnectionStates.connected;
     }
 
@@ -211,6 +210,10 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
     get botOwners(): string[] {
         return this._botOwners || [];
+    }
+
+    get databaseBackwardCompatibility(): boolean {
+        return this._databaseBackwardCompatibility || false;
     }
 
     get mongooseConnection(): Connection | undefined {

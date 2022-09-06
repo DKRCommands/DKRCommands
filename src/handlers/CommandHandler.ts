@@ -54,7 +54,7 @@ class CommandHandler {
                         return;
 
                     const { member, author: user, channel } = message;
-                    if (!abilityToRunCommand(instance, command, guild, channel, member, user, (reply: string | object) => {
+                    if (!await abilityToRunCommand(instance, command, guild, channel, member, user, (reply: string | object) => {
                         message.reply(reply).then();
                     }))
                         return;

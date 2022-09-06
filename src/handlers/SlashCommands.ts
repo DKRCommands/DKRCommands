@@ -31,7 +31,7 @@ export class SlashCommands {
      */
     private async checkAndSetup(listen: boolean): Promise<void> {
         if (listen) {
-            this.client.on("interactionCreate", (interaction) => {
+            this.client.on("interactionCreate", async (interaction) => {
                 if (!interaction.isChatInputCommand())
                     return;
 
@@ -66,7 +66,7 @@ export class SlashCommands {
                     args.push(String(value));
                 });
 
-                if (!abilityToRunCommand(this.instance, command, guild, channel, member, user, (reply: string | object) => {
+                if (!await abilityToRunCommand(this.instance, command, guild, channel, member, user, (reply: string | object) => {
                     if (typeof reply === "string")
                         interaction.reply({
                             content: reply,
