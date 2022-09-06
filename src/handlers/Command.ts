@@ -1,6 +1,6 @@
 import { Client, GuildMember, Message, MessageReaction, TextChannel } from "discord.js";
 import { DKRCommands } from "../index";
-import { ICallbackObject, ICommand, IErrorObject } from "../interfaces";
+import { ICallbackObject, ICommand } from "../interfaces";
 
 /**
  * A class containing a constructor for individual commands.
@@ -17,9 +17,8 @@ export class Command {
     private readonly _slash: boolean | "both";
 
     public callback: (obj: ICallbackObject) => void | string | object;
-    public error: (obj: IErrorObject) => void;
 
-    constructor(instance: DKRCommands, client: Client, names: string[], callback: () => void | string | object, error: () => void, {
+    constructor(instance: DKRCommands, client: Client, names: string[], callback: (obj: ICallbackObject) => void | string | object, {
         description,
         permissions,
         ownerOnly = false,
@@ -37,7 +36,6 @@ export class Command {
         this._testOnly = testOnly;
         this._slash = slash;
         this.callback = callback;
-        this.error = error;
     }
 
     /**

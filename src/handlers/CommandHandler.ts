@@ -1,6 +1,6 @@
 import { existsSync } from "fs";
 import { Client, PermissionsBitField } from "discord.js";
-import { DKRCommands } from "../index";
+import { DKRCommands, ICommand } from "../index";
 import { Command } from "./Command";
 import { abilityToRunCommand, getAllFiles } from "../utils";
 
@@ -62,21 +62,10 @@ class CommandHandler {
                     try {
                         command.execute(message, args).then();
                     } catch (e) {
-                        //TODO: remove this in favor of global events
-                        if (command.error)
-                            command.error({
-                                command: command.name,
-                                message,
-                                info: {
-                                    error: e,
-                                },
-                            });
-                        else {
-                            if (instance.errorMessages)
-                                message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
-                            console.error(e);
-                        }
+                        console.error(e);
 
+                        if (instance.errorMessages)
+                            message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
                         instance.emit("commandException", instance, guild, command, e as Error, (reply: string | object) => {
                             message.reply(reply).then();
                         });
@@ -108,14 +97,8 @@ class CommandHandler {
             testOnly,
             options = [],
             init,
-            callback,
-            error,
-            run,
-            execute
-        } = configuration;
-
-        if (run || execute)
-            throw new Error(`Command located at "${file}" has either a "run" or "execute" function. Please rename that function to "callback".`);
+            callback
+        }: ICommand = configuration;
 
         let names = aliases || [];
         if (!name && (!names || names.length === 0))
@@ -173,7 +156,7 @@ class CommandHandler {
             if (init)
                 init(client, instance);
 
-            const command = new Command(instance, client, names, callback, error, configuration);
+            const command = new Command(instance, client, names, callback, configuration);
             for (const name of names)
                 this.commands.set(name.toLowerCase(), command);
         }

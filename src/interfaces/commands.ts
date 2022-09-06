@@ -25,13 +25,8 @@ interface ICallbackObject {
     user: User;
 }
 
-interface IErrorObject {
-    command: string;
-    message: Message;
-    info: object;
-}
-
 interface ICommand {
+    name?: string;
     aliases?: string[] | string;
     description: string;
     permissions?: bigint[];
@@ -44,8 +39,6 @@ interface ICommand {
     init?(client: Client, instance: DKRCommands): void;
 
     callback?(obj: ICallbackObject): void | string | object;
-
-    error?(obj: IErrorObject): void;
 }
 
 interface Options {
@@ -66,7 +59,6 @@ interface Options {
 
 export {
     ICallbackObject,
-    IErrorObject,
     ICommand,
     Options
 };
