@@ -2,7 +2,7 @@ import {
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
     Client,
-    CommandInteractionOptionResolver, Guild,
+    Guild,
     GuildMember,
     Message, TextChannel,
     User
@@ -19,9 +19,7 @@ interface ICallbackObject {
     member: GuildMember;
     channel: TextChannel;
     prefix?: string;
-    args: string[];
-    text: string;
-    options?: Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">;
+    content?: string;
     user: User;
 }
 

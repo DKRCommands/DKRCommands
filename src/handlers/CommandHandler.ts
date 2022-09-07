@@ -60,7 +60,7 @@ class CommandHandler {
                         return;
 
                     try {
-                        command.execute(message, args).then();
+                        command.execute(message, args.join(" ")).then();
                     } catch (e) {
                         console.error(e);
 
@@ -120,7 +120,7 @@ class CommandHandler {
         if (testOnly && !instance.testServers?.length)
             console.warn(`DKRCommands > Command "${names[0]}" has "testOnly" set to true, but no test servers are defined.`);
 
-        if (typeof slash !== "boolean" && slash !== "both")
+        if (typeof slash !== "undefined" && typeof slash !== "boolean" && slash !== "both")
             throw new Error(`DKRCommands > Command "${names[0]}" has a "slash" property that is not boolean "true" or string "both".`);
         if (!slash && options.length)
             throw new Error(`DKRCommands > Command "${names[0]}" has an "options" property but is not a slash command.`);
@@ -128,6 +128,7 @@ class CommandHandler {
             if (!description)
                 throw new Error(`DKRCommands > A description is required for command "${names[0]}" because it is a slash command.`);
 
+            // TODO: check and improve it's functionality
             if (options.length) {
                 for (const key in options) {
                     const name = options[key].name;

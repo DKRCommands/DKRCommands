@@ -42,9 +42,9 @@ export class Command {
     /**
      * Calls the callback method of the legacy command.
      * @param message - Discord message
-     * @param args - command arguments
+     * @param content - command message content without prefix and command name
      */
-    public async execute(message: Message, args: string[]): Promise<void> {
+    public async execute(message: Message, content: string): Promise<void> {
         const reply = await this.callback({
             instance: this._instance,
             client: this._client,
@@ -53,8 +53,7 @@ export class Command {
             member: message.member as GuildMember,
             channel: message.channel as TextChannel,
             prefix: await this._instance.getPrefix(message.guild),
-            args,
-            text: args.join(" "),
+            content,
             user: message.author
         });
 

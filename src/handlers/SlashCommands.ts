@@ -5,7 +5,7 @@ import {
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
     Client,
-    CommandInteractionOptionResolver, GuildMember, InteractionResponse, Message, TextChannel
+    GuildMember, InteractionResponse, Message, TextChannel
 } from "discord.js";
 import { DKRCommands } from "../index";
 import { abilityToRunCommand } from "../utils";
@@ -35,7 +35,7 @@ export class SlashCommands {
                 if (!interaction.isChatInputCommand())
                     return;
 
-                const { commandName, guild, user, channelId, options } = interaction;
+                const { commandName, guild, user, channelId } = interaction;
                 const member = interaction.member as GuildMember;
                 const channel = guild?.channels.cache.get(channelId) || null;
                 const command = this.instance.commandHandler.getCommand(commandName);
@@ -61,11 +61,6 @@ export class SlashCommands {
                     return;
                 }
 
-                const args: string[] = [];
-                options.data.forEach(({ value }) => {
-                    args.push(String(value));
-                });
-
                 if (!await abilityToRunCommand(this.instance, command, guild, channel, member, user, (reply: string | object) => {
                     if (typeof reply === "string")
                         interaction.reply({
@@ -80,7 +75,7 @@ export class SlashCommands {
                 }))
                     return;
 
-                this.invokeCommand(interaction, commandName, options, args).then();
+                this.invokeCommand(interaction, commandName).then();
             });
         }
     }
@@ -89,11 +84,9 @@ export class SlashCommands {
      * Calls the callback method of the slash command.
      * @param interaction - Discord interaction
      * @param commandName - name of the called command
-     * @param options - command options
-     * @param args - command arguments
      * @private
      */
-    private async invokeCommand(interaction: ChatInputCommandInteraction, commandName: string, options: Omit<CommandInteractionOptionResolver, "getMessage" | "getFocused">, args: string[]): Promise<void> {
+    private async invokeCommand(interaction: ChatInputCommandInteraction, commandName: string): Promise<void> {
         const command = this.instance.commandHandler.getCommand(commandName);
         if (!command || !command.callback)
             return;
@@ -105,9 +98,6 @@ export class SlashCommands {
             guild: interaction.guild,
             member: interaction.member as GuildMember,
             channel: interaction.channel as TextChannel,
-            args,
-            text: args.join(" "),
-            options,
             user: interaction.user
         });
 
