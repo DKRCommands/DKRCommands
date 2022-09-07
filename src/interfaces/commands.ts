@@ -1,5 +1,5 @@
 import {
-    ApplicationCommandOptionData,
+    ApplicationCommandOptionData, ApplicationCommandSubCommandData,
     ChatInputCommandInteraction,
     Client,
     Guild,
@@ -32,7 +32,7 @@ interface ICommand {
     guildOnly?: boolean;
     testOnly?: boolean;
     slash?: boolean | "both";
-    options?: ApplicationCommandOptionData[];
+    options?: (ApplicationCommandOptionData & { options?: ApplicationCommandSubCommandData[] })[];
 
     init?(client: Client, instance: DKRCommands): void;
 

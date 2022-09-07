@@ -122,28 +122,20 @@ class CommandHandler {
 
         if (typeof slash !== "undefined" && typeof slash !== "boolean" && slash !== "both")
             throw new Error(`DKRCommands > Command "${names[0]}" has a "slash" property that is not boolean "true" or string "both".`);
-        if (!slash && options.length)
+        if (!slash && options?.length)
             throw new Error(`DKRCommands > Command "${names[0]}" has an "options" property but is not a slash command.`);
         if (slash) {
             if (!description)
                 throw new Error(`DKRCommands > A description is required for command "${names[0]}" because it is a slash command.`);
 
-            // TODO: check and improve it's functionality
-            if (options.length) {
-                for (const key in options) {
-                    const name = options[key].name;
-                    let lowerCase = name.toLowerCase();
-                    if (name !== lowerCase && instance.showWarns)
-                        console.log(`DKRCommands > Command "${names[0]}" has an option of "${name}". All option names must be lower case for slash commands. DKRCommands will modify this for you.`);
+            if (options?.length)
+                for (const option of options) {
+                    option.name = this.checkName(instance, names[0], option.name);
 
-                    if (lowerCase.match(/\s/g)) {
-                        lowerCase = lowerCase.replace(/\s/g, "_");
-                        console.log(`DKRCommands > Command "${names[0]}" has an option of "${name}" with a white space in it. It is a best practice for option names to only be one word. DKRCommands will modify this for you.`);
-                    }
-
-                    options[key].name = lowerCase;
+                    if (option.options)
+                        for (const subOption of option.options)
+                            subOption.name = this.checkName(instance, names[0], subOption.name);
                 }
-            }
 
             const slashCommands = instance.slashCommands;
             if (testOnly)
@@ -161,6 +153,47 @@ class CommandHandler {
             for (const name of names)
                 this.commands.set(name.toLowerCase(), command);
         }
+    }
+
+    /**
+     * Checks whether the slash command option name meet the required parameters.
+     * @param instance - DKRCommands instance
+     * @param command - command name
+     * @param name - option name
+     * @private
+     */
+    private checkName(instance: DKRCommands, command: string, name: string): string {
+        name = this.checkLowerCaseName(instance, command, name);
+        name = this.checkSpaceInName(command, name);
+
+        return name;
+    }
+
+    /**
+     * Checks whether the name of the slash command option contains spaces and corrects the name if necessary.
+     * @param command - command name
+     * @param name - option name
+     * @private
+     */
+    private checkSpaceInName(command: string, name: string): string {
+        if (name.match(/\s/g))
+            console.log(`DKRCommands > Command "${command}" has an option of "${name}" with a white space in it. It is a best practice for option names to only be one word. DKRCommands will modify this for you.`);
+
+        return name.replace(/\s/g, "_");
+    }
+
+    /**
+     * Checks if the name of the slash command option is lowercase and corrects the name if necessary.
+     * @param instance - DKRCommands instance
+     * @param command - command name
+     * @param name - option name
+     * @private
+     */
+    private checkLowerCaseName(instance: DKRCommands, command: string, name: string): string {
+        if (name !== name.toLowerCase() && instance.showWarns)
+            console.log(`DKRCommands > Command "${command}" has an option of "${name}". All option names must be lower case for slash commands. DKRCommands will modify this for you.`);
+
+        return name.toLowerCase();
     }
 
     /**
