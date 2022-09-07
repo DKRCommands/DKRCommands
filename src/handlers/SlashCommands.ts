@@ -1,11 +1,9 @@
 import { isDeepStrictEqual } from "util";
 import {
-    ApplicationCommand,
-    ApplicationCommandOption,
+    ApplicationCommand, ApplicationCommandOption,
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
-    Client,
-    GuildMember, InteractionResponse, Message, TextChannel
+    Client, Collection, Guild, GuildMember, InteractionResponse, Message, Snowflake, TextChannel
 } from "discord.js";
 import { DKRCommands } from "../index";
 import { abilityToRunCommand } from "../utils";
@@ -158,5 +156,37 @@ export class SlashCommands {
         return (command.options?.filter((opt: ApplicationCommandOption & { nameLocalized?: string | undefined, descriptionLocalized?: string | undefined, required?: boolean, options?: ApplicationCommandOptionData[] }, index) => {
             return !isDeepStrictEqual(JSON.parse(JSON.stringify(opt)), options[index]);
         }).length !== 0);
+    }
+
+    /**
+     * Returns a list of slash commands for the specified server or for the entire bot.
+     * @param guild - Discord guild
+     */
+    public async getCommands(guild?: Guild): Promise<Collection<string, ApplicationCommand> | undefined> {
+        let commands;
+        if (guild?.id)
+            commands = this.client.guilds.cache.get(guild.id)?.commands;
+        else
+            commands = this.client.application?.commands;
+
+        await commands?.fetch({});
+        return commands?.cache;
+    }
+
+    /**
+     * Deletes the slash command according to the specified ID.
+     * @param id - command id
+     * @param guild - Discord guild
+     */
+    public async deleteCommand(id: Snowflake, guild?: Guild): Promise<ApplicationCommand | undefined> {
+        const commands = await this.getCommands(guild);
+        const command = commands?.get(id);
+        if (command) {
+            console.log(`DKRCommands > Deleting${guild ? " guild" : ""} slash command "${command.name}"`);
+
+            command.delete().then();
+        }
+
+        return command;
     }
 }
