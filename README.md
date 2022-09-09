@@ -1,39 +1,46 @@
-<a href='https://github.com/karelkryda/DKRCommands' target='_blank'>![alt GitHub Repo](https://img.shields.io/github/stars/karelkryda/DKRCommands?style=social)</a>
+<div align="center">
+    <img src="https://user-images.githubusercontent.com/59953812/189377844-aa5cfcb5-8608-4219-ba7a-f505c3112220.svg" width="80%" alt="Logo">
+</div>
 
-<a href='https://nodei.co/npm/dkrcommands/' target='_blank'>![alt DKRCommands](https://nodei.co/npm/dkrcommands.png)</a>
+<hr>
+<img src="https://img.shields.io/github/workflow/status/karelkryda/DKRCommands/Lint?label=Lint&logo=github&style=for-the-badge" alt="Lint check">
+<img src="https://img.shields.io/github/workflow/status/karelkryda/DKRCommands/Build?logo=github&style=for-the-badge" alt="Build check">
+<br>
+<img src="https://img.shields.io/npm/v/dkrcommands?logo=npm&style=for-the-badge" alt="Npm version">
+<img src="https://img.shields.io/github/languages/code-size/karelkryda/DKRCommands?logo=npm&style=for-the-badge" alt="Code size">
+<img src="https://img.shields.io/npm/dw/dkrcommands?logo=npm&style=for-the-badge" alt="Downloads">
+<br>
+<img src="https://img.shields.io/github/issues/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="Github issues">
+<img src="https://img.shields.io/github/stars/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="Github stars">
+<img src="https://img.shields.io/github/license/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="License">
+<hr>
 
-# DKRCommands
-
-DKRCommands is a Discord.JS command handler for Discord.js v14 built as a rework of WOKCommands
+DKRCommands is a Discord.js command handler for Discord.js v14 built as a rework of WOKCommands
 by [Worn Off Keys](https://github.com/AlexzanderFlores/WOKCommands). The goal of this
 package is to make it simple and easy to get your bot off the ground without worrying about your own command
 handler.
 
-# Documentation
+# 📗 Documentation
 
 The official documentation can be found [here](https://karel-kryda.gitbook.io/dkrcommands/).
 
-# Installation
+# 🔧 Installation
 
-**NPM**
+##### **NPM**
 
 ```bash
 npm install dkrcommands
 ```
 
-Development Build
+##### **Development Build**
 
 ```bash
 npm install github:karelkryda/DKRCommands#development
 ```
 
-# Discord.js v13
+# 🧭 Credits
 
-If you're using Discord.js v13, you can use the original [WOKCommands](https://github.com/AlexzanderFlores/WOKCommands)
-library.
+👤 **Alexzander Flores**
 
-**NPM**
-
-```bash
-npm install wokcommands
-```
+- Author of WOKCommands
+- Github: [@AlexzanderFlores](https://github.com/AlexzanderFlores)
