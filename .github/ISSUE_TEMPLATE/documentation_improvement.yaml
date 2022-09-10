@@ -1,0 +1,41 @@
+name: "📗 Documentation improvement"
+description: Submit a proposal to improve the documentation
+title: "[Documentation]: "
+labels: [ "documentation" ]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this documentation improvement!
+  - type: checkboxes
+    id: no_duplicate_issues
+    attributes:
+      label: "⚠️ Please verify that this documentation improvement has NOT been raised before."
+      description: Search in the issues sections by clicking [HERE](https://github.com/karelkryda/DKRCommands/issues?q=documentation)
+      options:
+        - label: I checked and didn't find similar documentation improvement request
+          required: true
+  - type: input
+    id: url
+    attributes:
+      label: "🔗 Link to the documentation section"
+      description: Link to the section of the documentation to which this request relates.
+      placeholder: ex. https://karel-kryda.gitbook.io/dkrcommands/commands/basic-information
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "✏ Description"
+      description: A clear and concise description of what and why should be changed.
+      placeholder: ex. You should change this to...
+    validations:
+      required: true
+  - type: textarea
+    id: proposed_change
+    attributes:
+      label: "✏ Proposed change"
+      description: Your proposed change to the documentation.
+      placeholder: ...
+    validations:
+      required: false
