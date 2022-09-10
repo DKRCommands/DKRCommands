@@ -14,6 +14,8 @@ export class Command {
     private readonly _permissions: bigint[] | undefined;
     private readonly _ownerOnly: boolean;
     private readonly _guildOnly: boolean;
+    private readonly _requiresVoice: boolean;
+    private readonly _requiresSameVoice: boolean;
     private readonly _testOnly: boolean;
     private readonly _slash: boolean | "both";
 
@@ -24,6 +26,8 @@ export class Command {
         permissions,
         ownerOnly = false,
         guildOnly = false,
+        requiresVoice = false,
+        requiresSameVoice = false,
         testOnly = false,
         slash = false
     }: ICommand) {
@@ -34,6 +38,8 @@ export class Command {
         this._permissions = permissions;
         this._ownerOnly = ownerOnly;
         this._guildOnly = guildOnly;
+        this._requiresVoice = requiresVoice;
+        this._requiresSameVoice = requiresSameVoice;
         this._testOnly = testOnly;
         this._slash = slash;
         this.callback = callback;
@@ -304,6 +310,14 @@ export class Command {
 
     get guildOnly(): boolean {
         return this._guildOnly;
+    }
+
+    get requiresVoice(): boolean {
+        return this._requiresVoice;
+    }
+
+    get requiresSameVoice(): boolean {
+        return this._requiresSameVoice;
     }
 
     get testOnly(): boolean {

@@ -14,6 +14,8 @@ interface DKRCommandsEvents {
     "commandDisallowedChannel": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
     "commandMissingPermission": (instance: DKRCommands, guild: Guild | null, permission: string, send: (message: string | object) => void) => void;
     "commandMissingRole": (instance: DKRCommands, guild: Guild | null, role: string, send: (message: string | object) => void) => void;
+    "commandRequiresVoice": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
+    "commandRequiresSameVoice": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
 }
 
 export {

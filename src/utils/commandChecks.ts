@@ -28,7 +28,9 @@ async function abilityToRunCommand(instance: DKRCommands, command: Command, guil
         (command.guildOnly && !checkGuildOnly(instance, guild, send)) ||
         ((await command.getAllowedChannels(guild)).length > 0 && !checkAllowedChannels(instance, guild, channel, await command.getAllowedChannels(guild), send)) ||
         (command.permissions.length > 0 && !checkRequiredPermissions(instance, guild, member, command.permissions, send)) ||
-        ((await command.getRequiredRoles(guild)).length > 0 && !checkRequiredRoles(instance, guild, member, await command.getRequiredRoles(guild), send))
+        ((await command.getRequiredRoles(guild)).length > 0 && !checkRequiredRoles(instance, guild, member, await command.getRequiredRoles(guild), send)) ||
+        (command.requiresVoice && !checkVoice(instance, guild, member, send)) ||
+        (command.requiresSameVoice && !checkSameVoice(instance, guild, member, send))
     );
 }
 
@@ -163,6 +165,46 @@ function checkRequiredRoles(instance: DKRCommands, guild: Guild | null, member: 
 
                 return false;
             }
+        }
+
+    return true;
+}
+
+/**
+ * Checks whether the user is connected to a voice channel.
+ * @param instance - DKRCommands instance
+ * @param guild - Discord guild
+ * @param member - Discord member
+ * @param send - send callback
+ */
+function checkVoice(instance: DKRCommands, guild: Guild | null, member: GuildMember | null, send: (reply: (string | object)) => void): boolean {
+    if (guild?.id)
+        if (!member?.voice.channel) {
+            if (instance.errorMessages)
+                send("This command can only be used if you are connected to a voice channel.");
+            instance.emit("commandRequiresVoice", instance, guild, send);
+
+            return false;
+        }
+
+    return true;
+}
+
+/**
+ * Checks whether the user is connected to the same voice channel as the bot.
+ * @param instance - DKRCommands instance
+ * @param guild - Discord guild
+ * @param member - Discord member
+ * @param send - send callback
+ */
+function checkSameVoice(instance: DKRCommands, guild: Guild | null, member: GuildMember | null, send: (reply: (string | object)) => void): boolean {
+    if (guild?.id)
+        if (member?.voice.channel?.id !== guild.members.me?.voice.channel?.id) {
+            if (instance.errorMessages)
+                send("This command can only be used if you are connected to the same voice channel as the bot.");
+            instance.emit("commandRequiresSameVoice", instance, guild, send);
+
+            return false;
         }
 
     return true;

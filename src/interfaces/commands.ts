@@ -30,6 +30,8 @@ interface ICommand {
     permissions?: bigint[];
     ownerOnly?: boolean;
     guildOnly?: boolean;
+    requiresVoice?: boolean;
+    requiresSameVoice?: boolean;
     testOnly?: boolean;
     slash?: boolean | "both";
     options?: (ApplicationCommandOptionData & { options?: ApplicationCommandSubCommandData[] })[];
