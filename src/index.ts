@@ -16,7 +16,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     private _debug?: boolean;
     private _testServers?: string[];
     private _botOwners?: string[];
-    private typescript?: boolean;
+    private typeScript?: boolean;
     private mongoUri?: string;
     private dbOptions?: ConnectOptions;
     private _databaseBackwardCompatibility?: boolean;
@@ -52,7 +52,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
             botOwners,
             ephemeral,
             debug,
-            typescript,
+            typeScript,
             mongoUri,
             dbOptions,
             databaseBackwardCompatibility
@@ -65,7 +65,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         this._ignoreBots = ignoreBots;
         this._ephemeral = ephemeral;
         this._debug = debug;
-        this.typescript = typescript;
+        this.typeScript = typeScript;
         this.mongoUri = mongoUri;
         this.dbOptions = dbOptions;
         this._databaseBackwardCompatibility = databaseBackwardCompatibility;
@@ -92,7 +92,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         if (botOwners)
             this._botOwners = (typeof botOwners === "string") ? [botOwners] : botOwners;
 
-        this._commandHandler = new CommandHandler(this, client, this._commandsDir || "", this.typescript);
+        this._commandHandler = new CommandHandler(this, client, this._commandsDir || "", this.typeScript);
         this._slashCommands = new SlashCommands(this, true);
 
         console.log("DKRCommands > Your bot is now running.");
@@ -221,7 +221,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     }
 
     get commandHandler(): CommandHandler {
-        return this._commandHandler || new CommandHandler(this, this._client, this._commandsDir || "", this.typescript);
+        return this._commandHandler || new CommandHandler(this, this._client, this._commandsDir || "", this.typeScript);
     }
 
     get slashCommands(): SlashCommands {

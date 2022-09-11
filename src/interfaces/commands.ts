@@ -51,7 +51,7 @@ interface Options {
     botOwners?: string | string[];
     ephemeral?: boolean;
     debug?: boolean;
-    typescript?: boolean;
+    typeScript?: boolean;
     mongoUri?: string;
     dbOptions?: ConnectOptions;
     databaseBackwardCompatibility?: boolean;
