@@ -5,7 +5,7 @@ import {
     ChatInputCommandInteraction,
     Client, Collection, GuildMember, InteractionResponse, Message, Snowflake, TextChannel
 } from "discord.js";
-import { DKRCommands } from "../index";
+import { DKRCommands, ICommand } from "../index";
 import { CommandCheckObject } from "../interfaces";
 import { abilityToRunCommand } from "../utils";
 
@@ -77,6 +77,22 @@ export class SlashCommands {
                 this.invokeCommand(interaction, commandName).then();
             });
         }
+
+        this.checkAndDelete(
+            this.instance.testServers,
+            (await Promise.all(this.instance.commandHandler.files.map(async (file): Promise<CommandCheckObject> => {
+                let configuration = await require(file[0]);
+                if (configuration.default && Object.keys(configuration).length === 1)
+                    configuration = configuration.default;
+                const { slash, testOnly }: ICommand = configuration;
+
+                return {
+                    name: file[1].toLowerCase(),
+                    slash: slash || false,
+                    testOnly: testOnly || false
+                };
+            }))).filter((file) => (file.slash === true || file.slash === "both"))
+        ).then();
     }
 
     /**
@@ -163,8 +179,9 @@ export class SlashCommands {
      * Deletes slash commands whose files have been removed from the code.
      * @param testServers - Discord test servers
      * @param commands - names of loaded slash commands
+     * @private
      */
-    public async checkAndDelete(testServers: string[], commands: CommandCheckObject[]): Promise<void> {
+    private async checkAndDelete(testServers: string[], commands: CommandCheckObject[]): Promise<void> {
         // Deletes all global slash commands whose files have been removed or are now set to testOnly.
         const globalCommands = await this.getCommands();
         const deletedGlobalCommands = globalCommands?.map((globalCommand) => {

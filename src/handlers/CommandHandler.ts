@@ -2,13 +2,13 @@ import { existsSync } from "fs";
 import { Client, PermissionsBitField } from "discord.js";
 import { DKRCommands, ICommand } from "../index";
 import { Command } from "./Command";
-import { CommandCheckObject } from "../interfaces";
 import { abilityToRunCommand, getAllFiles } from "../utils";
 
 /**
  * The class responsible for checking and registering commands.
  */
 class CommandHandler {
+    private _files: [string, string][] = [];
     private commands: Map<string, Command> = new Map();
     private client: Client;
 
@@ -30,30 +30,12 @@ class CommandHandler {
             if (!existsSync(dir))
                 throw new Error(`Commands directory "${dir}" doesn't exist!`);
 
-            const files = getAllFiles(dir, typeScript ? ".ts" : "");
-            const amount = files.length;
+            this._files = getAllFiles(dir, typeScript ? ".ts" : "");
+            const amount = this._files.length;
 
             console.log(`DKRCommands > Loaded ${amount} command${amount === 1 ? "" : "s"}.`);
 
-            setTimeout(async () => {
-                instance.slashCommands.checkAndDelete(
-                    instance.testServers,
-                    (await Promise.all(files.map(async (file): Promise<CommandCheckObject> => {
-                        let configuration = await require(file[0]);
-                        if (configuration.default && Object.keys(configuration).length === 1)
-                            configuration = configuration.default;
-                        const { slash, testOnly }: ICommand = configuration;
-
-                        return {
-                            name: file[1].toLowerCase(),
-                            slash: slash || false,
-                            testOnly: testOnly || false
-                        };
-                    }))).filter((file) => (file.slash === true || file.slash === "both"))
-                ).then();
-            }, 5000);
-
-            for (const [file, fileName] of files)
+            for (const [file, fileName] of this._files)
                 await this.registerCommand(instance, client, file, fileName);
 
             client.on("messageCreate", async (message) => {
@@ -221,6 +203,10 @@ class CommandHandler {
      */
     public getCommand(name: string): Command | undefined {
         return this.commands.get(name);
+    }
+
+    get files(): [string, string][] {
+        return this._files;
     }
 }
 
