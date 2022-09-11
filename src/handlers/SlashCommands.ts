@@ -3,9 +3,10 @@ import {
     ApplicationCommand, ApplicationCommandOption,
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
-    Client, Collection, Guild, GuildMember, InteractionResponse, Message, Snowflake, TextChannel
+    Client, Collection, GuildMember, InteractionResponse, Message, Snowflake, TextChannel
 } from "discord.js";
 import { DKRCommands } from "../index";
+import { CommandCheckObject } from "../interfaces";
 import { abilityToRunCommand } from "../utils";
 
 /**
@@ -159,13 +160,50 @@ export class SlashCommands {
     }
 
     /**
+     * Deletes slash commands whose files have been removed from the code.
+     * @param testServers - Discord test servers
+     * @param commands - names of loaded slash commands
+     */
+    public async checkAndDelete(testServers: string[], commands: CommandCheckObject[]): Promise<void> {
+        // Deletes all global slash commands whose files have been removed or are now set to testOnly.
+        const globalCommands = await this.getCommands();
+        const deletedGlobalCommands = globalCommands?.map((globalCommand) => {
+            return {
+                id: globalCommand.id,
+                name: globalCommand.name
+            };
+        }).filter((globalCommand) => commands.filter((command) => !command.testOnly).map((command) => command.name).indexOf(globalCommand.name) === -1);
+        for (const globalCommand of deletedGlobalCommands || [])
+            this.deleteCommand(globalCommand.id).then();
+
+        if (deletedGlobalCommands?.length !== 0)
+            console.log(`DKRCommands > Deleting ${deletedGlobalCommands?.length} global slash command${deletedGlobalCommands?.length === 1 ? "" : "s"}.`);
+
+        // Deletes all slash commands of the server whose files have been deleted.
+        for (const testServer of testServers) {
+            const guildCommands = await this.getCommands(testServer);
+            const deletedGuildCommands = guildCommands?.map((guildCommand) => {
+                return {
+                    id: guildCommand.id,
+                    name: guildCommand.name
+                };
+            }).filter((guildCommand) => commands.map((command) => command.name).indexOf(guildCommand.name) === -1);
+            for (const guildCommand of deletedGuildCommands || [])
+                this.deleteCommand(guildCommand.id, testServer).then();
+
+            if (deletedGuildCommands?.length !== 0)
+                console.log(`DKRCommands > Deleting ${deletedGuildCommands?.length} slash command${deletedGuildCommands?.length === 1 ? "" : "s"} from guild ${testServer}.`);
+        }
+    }
+
+    /**
      * Returns a list of slash commands for the specified server or for the entire bot.
      * @param guild - Discord guild
      */
-    public async getCommands(guild?: Guild): Promise<Collection<string, ApplicationCommand> | undefined> {
+    public async getCommands(guild?: Snowflake): Promise<Collection<string, ApplicationCommand> | undefined> {
         let commands;
-        if (guild?.id)
-            commands = this.client.guilds.cache.get(guild.id)?.commands;
+        if (guild)
+            commands = this.client.guilds.cache.get(guild)?.commands;
         else
             commands = this.client.application?.commands;
 
@@ -178,7 +216,7 @@ export class SlashCommands {
      * @param id - command id
      * @param guild - Discord guild
      */
-    public async deleteCommand(id: Snowflake, guild?: Guild): Promise<ApplicationCommand | undefined> {
+    public async deleteCommand(id: Snowflake, guild?: Snowflake): Promise<ApplicationCommand | undefined> {
         const commands = await this.getCommands(guild);
         const command = commands?.get(id);
         if (command) {

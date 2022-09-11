@@ -2,6 +2,7 @@ import { existsSync } from "fs";
 import { Client, PermissionsBitField } from "discord.js";
 import { DKRCommands, ICommand } from "../index";
 import { Command } from "./Command";
+import { CommandCheckObject } from "../interfaces";
 import { abilityToRunCommand, getAllFiles } from "../utils";
 
 /**
@@ -33,6 +34,24 @@ class CommandHandler {
             const amount = files.length;
 
             console.log(`DKRCommands > Loaded ${amount} command${amount === 1 ? "" : "s"}.`);
+
+            setTimeout(async () => {
+                instance.slashCommands.checkAndDelete(
+                    instance.testServers,
+                    (await Promise.all(files.map(async (file): Promise<CommandCheckObject> => {
+                        let configuration = await require(file[0]);
+                        if (configuration.default && Object.keys(configuration).length === 1)
+                            configuration = configuration.default;
+                        const { slash, testOnly }: ICommand = configuration;
+
+                        return {
+                            name: file[1].toLowerCase(),
+                            slash: slash || false,
+                            testOnly: testOnly || false
+                        };
+                    }))).filter((file) => (file.slash === true || file.slash === "both"))
+                ).then();
+            }, 5000);
 
             for (const [file, fileName] of files)
                 await this.registerCommand(instance, client, file, fileName);

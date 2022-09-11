@@ -57,8 +57,15 @@ interface Options {
     databaseBackwardCompatibility?: boolean;
 }
 
+interface CommandCheckObject {
+    name: string;
+    slash: boolean | "both";
+    testOnly: boolean;
+}
+
 export {
     ICallbackObject,
     ICommand,
-    Options
+    Options,
+    CommandCheckObject
 };
