@@ -1,4 +1,4 @@
-import { Connection, ConnectionStates } from "mongoose";
+import { Connection, ConnectionStates, ConnectOptions } from "mongoose";
 import { Guild } from "discord.js";
 import { DKRCommands } from "../index";
 import { Command } from "../handlers";
@@ -18,6 +18,31 @@ interface DKRCommandsEvents {
     "commandRequiresSameVoice": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
 }
 
+interface Options {
+    commandsDir: string;
+    prefix?: string;
+    showWarns?: boolean;
+    errorMessages?: boolean;
+    ignoreBots?: boolean;
+    testServers?: string | string[];
+    botOwners?: string | string[];
+    ephemeral?: boolean;
+    debug?: boolean;
+    typeScript?: boolean;
+    mongoUri?: string;
+    dbOptions?: ConnectOptions;
+    databaseBackwardCompatibility?: boolean;
+    plugins?: Plugin[];
+}
+
+abstract class Plugin {
+    abstract load(instance: DKRCommands): void;
+
+    abstract unload(): void;
+}
+
 export {
-    DKRCommandsEvents
+    DKRCommandsEvents,
+    Options,
+    Plugin
 };

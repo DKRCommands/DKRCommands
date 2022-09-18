@@ -1,7 +1,7 @@
 import { TypedEmitter } from "tiny-typed-emitter";
 import { Client, Guild } from "discord.js";
 import { connect, Connection, connection, ConnectionStates, ConnectOptions } from "mongoose";
-import { DKRCommandsEvents, ICommand, Options } from "./interfaces";
+import { DKRCommandsEvents, ICommand, Options, Plugin } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
 import { GuildModel, LanguageModel, PrefixModel } from "./database/models";
 
@@ -21,6 +21,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     private dbOptions?: ConnectOptions;
     private _databaseBackwardCompatibility?: boolean;
     private _mongooseConnection?: Connection;
+    private plugins?: Plugin[];
 
     private _commandHandler?: CommandHandler;
     private _slashCommands?: SlashCommands;
@@ -38,7 +39,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
      * @param options - DKRCommands options object
      * @private
      */
-    private async checkAndSetup(client: Client, options?: Options) {
+    private async checkAndSetup(client: Client, options?: Options): Promise<void> {
         if (!client)
             throw new Error("No Discord JS Client provided as first argument!");
 
@@ -55,7 +56,8 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
             typeScript,
             mongoUri,
             dbOptions,
-            databaseBackwardCompatibility
+            databaseBackwardCompatibility,
+            plugins
         } = options || {};
 
         this._commandsDir = commandsDir;
@@ -69,6 +71,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         this.mongoUri = mongoUri;
         this.dbOptions = dbOptions;
         this._databaseBackwardCompatibility = databaseBackwardCompatibility;
+        this.plugins = plugins;
 
         if (mongoUri) {
             await connect(mongoUri, {
@@ -82,7 +85,10 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
             console.warn("DKRCommands > No MongoDB connection URI provided. Some features might not work! See this for more details:\nhttps://karel-kryda.gitbook.io/dkrcommands/databases/mongodb");
 
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
-            throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://docs.wornoffkeys.com/setup-and-options-object");
+            throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://karel-kryda.gitbook.io/dkrcommands/setup-and-options-object");
+
+        if (this.plugins && !Array.isArray(this.plugins))
+            throw new Error("DKRCommands > Option 'plugins' must be a Plugin array. More info: https://karel-kryda.gitbook.io/dkrcommands/plugins/basic-info");
 
         if (this._errorMessages === false && showWarns)
             console.warn("DKRCommands > Default error messages will not be sent, remember to listen for all required events. See this for more details:\nhttps://karel-kryda.gitbook.io/dkrcommands/useful-information/error-messages-customization");
@@ -94,6 +100,15 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
         this._commandHandler = new CommandHandler(this, client, this._commandsDir || "", this.typeScript);
         this._slashCommands = new SlashCommands(this, true);
+
+        if (this.plugins) {
+            for (const [index, plugin] of this.plugins.entries()) {
+                if (!(plugin instanceof Plugin))
+                    throw new Error(`DKRCommands > Plugin at index ${index} does not extend Plugin.`);
+
+                plugin.load(this);
+            }
+        }
 
         console.log("DKRCommands > Your bot is now running.");
     }
@@ -230,5 +245,6 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 }
 
 export {
-    ICommand
+    ICommand,
+    Plugin
 };

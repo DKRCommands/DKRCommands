@@ -8,20 +8,6 @@ import {
     User
 } from "discord.js";
 import { DKRCommands } from "../index";
-import { ConnectOptions } from "mongoose";
-
-interface ICallbackObject {
-    instance: DKRCommands;
-    client: Client;
-    interaction?: ChatInputCommandInteraction;
-    message?: Message;
-    guild: Guild | null;
-    member: GuildMember;
-    channel: TextChannel;
-    prefix?: string;
-    content?: string;
-    user: User;
-}
 
 interface ICommand {
     name?: string;
@@ -41,20 +27,17 @@ interface ICommand {
     callback?(obj: ICallbackObject): void | string | object;
 }
 
-interface Options {
-    commandsDir: string;
+interface ICallbackObject {
+    instance: DKRCommands;
+    client: Client;
+    interaction?: ChatInputCommandInteraction;
+    message?: Message;
+    guild: Guild | null;
+    member: GuildMember;
+    channel: TextChannel;
     prefix?: string;
-    showWarns?: boolean;
-    errorMessages?: boolean;
-    ignoreBots?: boolean;
-    testServers?: string | string[];
-    botOwners?: string | string[];
-    ephemeral?: boolean;
-    debug?: boolean;
-    typeScript?: boolean;
-    mongoUri?: string;
-    dbOptions?: ConnectOptions;
-    databaseBackwardCompatibility?: boolean;
+    content?: string;
+    user: User;
 }
 
 interface CommandCheckObject {
@@ -64,8 +47,7 @@ interface CommandCheckObject {
 }
 
 export {
-    ICallbackObject,
     ICommand,
-    Options,
+    ICallbackObject,
     CommandCheckObject
 };
