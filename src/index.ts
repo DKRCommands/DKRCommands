@@ -1,5 +1,5 @@
 import { TypedEmitter } from "tiny-typed-emitter";
-import { Client, Guild } from "discord.js";
+import { Client, Guild, version as djsVersion } from "discord.js";
 import { connect, Connection, connection, ConnectionStates, ConnectOptions } from "mongoose";
 import { DKRCommandsEvents, ICommand, Options, Plugin } from "./interfaces";
 import { CommandHandler, SlashCommands } from "./handlers";
@@ -241,6 +241,10 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
     get slashCommands(): SlashCommands {
         return this._slashCommands || new SlashCommands(this, true);
+    }
+
+    get djsVersion(): string {
+        return djsVersion;
     }
 }
 

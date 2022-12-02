@@ -1,5 +1,5 @@
 import {
-    CategoryChannel, DMChannel,
+    CategoryChannel, DMChannel, ForumChannel,
     Guild,
     GuildMember,
     NewsChannel, PartialDMChannel, PermissionsBitField, PrivateThreadChannel, PublicThreadChannel, Snowflake,
@@ -20,7 +20,7 @@ import { Command } from "../handlers";
  * @param user - Discord user
  * @param send - send callback
  */
-async function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Guild | null, channel: CategoryChannel | NewsChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, member: GuildMember | null, user: User, send: (reply: string | object) => void): Promise<boolean> {
+async function abilityToRunCommand(instance: DKRCommands, command: Command, guild: Guild | null, channel: CategoryChannel | NewsChannel | ForumChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, member: GuildMember | null, user: User, send: (reply: string | object) => void): Promise<boolean> {
     return !(
         (!isEnabled(instance, guild, await command.isEnabled(guild), send)) ||
         (command.slash !== true && command.testOnly && !checkTestOnly(instance, guild)) ||
@@ -106,7 +106,7 @@ function checkGuildOnly(instance: DKRCommands, guild: Guild | null, send: (reply
  * @param channels - Allowed channels for command
  * @param send - send callback
  */
-function checkAllowedChannels(instance: DKRCommands, guild: Guild | null, commandChannel: CategoryChannel | NewsChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, channels: string[], send: (reply: (string | object)) => void): boolean {
+function checkAllowedChannels(instance: DKRCommands, guild: Guild | null, commandChannel: CategoryChannel | NewsChannel | ForumChannel | StageChannel | TextChannel | PublicThreadChannel | PrivateThreadChannel | VoiceChannel | DMChannel | PartialDMChannel | null, channels: string[], send: (reply: (string | object)) => void): boolean {
     if (guild?.id)
         for (const channel of channels) {
             const guildChannel = guild?.channels.cache.get(channel);
