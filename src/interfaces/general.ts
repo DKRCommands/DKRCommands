@@ -20,6 +20,7 @@ interface DKRCommandsEvents {
 
 interface Options {
     commandsDir: string;
+    eventsDir: string;
     prefix?: string;
     showWarns?: boolean;
     errorMessages?: boolean;

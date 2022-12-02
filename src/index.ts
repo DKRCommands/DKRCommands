@@ -2,12 +2,13 @@ import { TypedEmitter } from "tiny-typed-emitter";
 import { Client, Guild, version as djsVersion } from "discord.js";
 import { connect, Connection, connection, ConnectionStates, ConnectOptions } from "mongoose";
 import { DKRCommandsEvents, ICommand, Options, Plugin } from "./interfaces";
-import { CommandHandler, SlashCommands } from "./handlers";
+import { CommandHandler, EventHandler, SlashCommands } from "./handlers";
 import { GuildModel, LanguageModel, PrefixModel } from "./database/models";
 
 export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
     private readonly _client: Client;
     private _commandsDir?: string;
+    private eventsDir?: string;
     private prefix?: string;
     private _showWarns?: boolean;
     private _errorMessages?: boolean;
@@ -25,6 +26,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
     private _commandHandler?: CommandHandler;
     private _slashCommands?: SlashCommands;
+    private _eventHandler?: EventHandler;
 
     constructor(client: Client, options?: Options) {
         super();
@@ -45,6 +47,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
         const {
             commandsDir,
+            eventsDir,
             prefix,
             showWarns,
             errorMessages,
@@ -61,6 +64,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         } = options || {};
 
         this._commandsDir = commandsDir;
+        this.eventsDir = eventsDir;
         this.prefix = prefix;
         this._showWarns = showWarns;
         this._errorMessages = errorMessages;
@@ -87,6 +91,9 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
         if (this._commandsDir && !(this._commandsDir.includes("/") || this._commandsDir.includes("\\")))
             throw new Error("DKRCommands > The 'commands' directory must be an absolute path. This can be done by using the 'path' module. More info: https://karel-kryda.gitbook.io/dkrcommands/setup-and-options-object");
 
+        if (this.eventsDir && !(this.eventsDir.includes("/") || this.eventsDir.includes("\\")))
+            throw new Error("DKRCommands > The 'events' directory must be an absolute path. This can be done by using the 'path' module. More info: https://karel-kryda.gitbook.io/dkrcommands/setup-and-options-object");
+
         if (this.plugins && !Array.isArray(this.plugins))
             throw new Error("DKRCommands > Option 'plugins' must be a Plugin array. More info: https://karel-kryda.gitbook.io/dkrcommands/plugins/basic-info");
 
@@ -100,6 +107,7 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
         this._commandHandler = new CommandHandler(this, client, this._commandsDir || "", this.typeScript);
         this._slashCommands = new SlashCommands(this, true);
+        this._eventHandler = new EventHandler(this, this._client, this.eventsDir || "", this.typeScript);
 
         if (this.plugins) {
             for (const [index, plugin] of this.plugins.entries()) {
@@ -241,6 +249,10 @@ export class DKRCommands extends TypedEmitter<DKRCommandsEvents> {
 
     get slashCommands(): SlashCommands {
         return this._slashCommands || new SlashCommands(this, true);
+    }
+
+    get eventHandler(): EventHandler {
+        return this._eventHandler || new EventHandler(this, this._client, this.eventsDir || "", this.typeScript);
     }
 
     get djsVersion(): string {

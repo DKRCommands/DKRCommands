@@ -8,24 +8,23 @@ import { abilityToRunCommand, getAllFiles } from "../utils";
  * The class responsible for checking and registering commands.
  */
 class CommandHandler {
+    private readonly client: Client;
     private _files: [string, string][] = [];
     private commands: Map<string, Command> = new Map();
-    private client: Client;
 
     constructor(instance: DKRCommands, client: Client, dir: string, typeScript = false) {
         this.client = client;
-        this.checkAndSetup(instance, client, dir, typeScript).then();
+        this.checkAndSetup(instance, dir, typeScript).then();
     }
 
     /**
      * Checks for the existence of the specified command folder and registers all of them.
      * @param instance - DKRCommands instance
-     * @param client - Discord client
      * @param dir - commands directory
      * @param typeScript - if program runs as TypeScript
      * @private
      */
-    private async checkAndSetup(instance: DKRCommands, client: Client, dir: string, typeScript: boolean): Promise<void> {
+    private async checkAndSetup(instance: DKRCommands, dir: string, typeScript: boolean): Promise<void> {
         if (dir) {
             if (!existsSync(dir))
                 throw new Error(`Commands directory "${dir}" doesn't exist!`);
@@ -36,9 +35,9 @@ class CommandHandler {
             console.log(`DKRCommands > Loaded ${amount} command${amount === 1 ? "" : "s"}.`);
 
             for (const [file, fileName] of this._files)
-                await this.registerCommand(instance, client, file, fileName);
+                await this.registerCommand(instance, file, fileName);
 
-            client.on("messageCreate", async (message) => {
+            this.client.on("messageCreate", async (message) => {
                 const guild = message.guild;
                 const prefix = (await instance.getPrefix(guild)).toLowerCase();
 
@@ -79,12 +78,11 @@ class CommandHandler {
     /**
      * Checks the entered parameters of the command and, if correct, registers the command.
      * @param instance - DKRCommands instance
-     * @param client - Discord client
      * @param file - command file
      * @param fileName - command file name
      * @private
      */
-    private async registerCommand(instance: DKRCommands, client: Client, file: string, fileName: string): Promise<void> {
+    private async registerCommand(instance: DKRCommands, file: string, fileName: string): Promise<void> {
         let configuration = await require(file);
         if (configuration.default && Object.keys(configuration).length === 1)
             configuration = configuration.default;
@@ -148,9 +146,9 @@ class CommandHandler {
 
         if (callback) {
             if (init)
-                init(client, instance);
+                init(this.client, instance);
 
-            const command = new Command(instance, client, names, callback, configuration);
+            const command = new Command(instance, this.client, names, callback, configuration);
             for (const name of names)
                 this.commands.set(name.toLowerCase(), command);
         }
