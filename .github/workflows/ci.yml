@@ -33,7 +33,7 @@ jobs:
         run: npm run build
 
       - name: Push new code 🚀
-        if: github.event_name == 'push' && github.ref == 'refs/heads/production'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/development'
         run: |
           echo -e "\n# Initialize some useful variables"
           REPO="https://${GITHUB_ACTOR}:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
