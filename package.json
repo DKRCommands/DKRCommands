@@ -21,9 +21,9 @@
   ],
   "author": "Karel Krýda",
   "license": "Apache-2.0",
-  "homepage": "https://github.com/karelkryda/DKRCommands#readme",
-  "repository": "karelkryda/DKRCommands",
-  "bugs": "https://github.com/karelkryda/DKRCommands",
+  "homepage": "https://github.com/DKRCommands/DKRCommands#readme",
+  "repository": "DKRCommands/DKRCommands",
+  "bugs": "https://github.com/DKRCommands/DKRCommands",
   "dependencies": {
     "discord.js": "^14.7.1",
     "mongoose": "^6.7.5",

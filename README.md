@@ -4,18 +4,18 @@
 
 <hr>
 <div>
-    <img src="https://img.shields.io/github/workflow/status/karelkryda/DKRCommands/Lint?label=Lint&logo=github&style=for-the-badge" alt="Lint check">
-    <img src="https://img.shields.io/github/workflow/status/karelkryda/DKRCommands/Build?logo=github&style=for-the-badge" alt="Build check">
+    <img src="https://img.shields.io/github/workflow/status/DKRCommands/DKRCommands/Lint?label=Lint&logo=github&style=for-the-badge" alt="Lint check">
+    <img src="https://img.shields.io/github/workflow/status/DKRCommands/DKRCommands/Build?logo=github&style=for-the-badge" alt="Build check">
 </div>
 <div>
     <img src="https://img.shields.io/npm/v/dkrcommands?logo=npm&style=for-the-badge" alt="Npm version">
-    <img src="https://img.shields.io/github/languages/code-size/karelkryda/DKRCommands?logo=npm&style=for-the-badge" alt="Code size">
+    <img src="https://img.shields.io/github/languages/code-size/DKRCommands/DKRCommands?logo=npm&style=for-the-badge" alt="Code size">
     <img src="https://img.shields.io/npm/dw/dkrcommands?logo=npm&style=for-the-badge" alt="Downloads">
 </div>
 <div>
-    <img src="https://img.shields.io/github/issues/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="Github issues">
-    <img src="https://img.shields.io/github/stars/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="Github stars">
-    <img src="https://img.shields.io/github/license/karelkryda/DKRCommands?logo=github&style=for-the-badge" alt="License">
+    <img src="https://img.shields.io/github/issues/DKRCommands/DKRCommands?logo=github&style=for-the-badge" alt="Github issues">
+    <img src="https://img.shields.io/github/stars/DKRCommands/DKRCommands?logo=github&style=for-the-badge" alt="Github stars">
+    <img src="https://img.shields.io/github/license/DKRCommands/DKRCommands?logo=github&style=for-the-badge" alt="License">
 </div>
 <hr>
 
@@ -39,8 +39,12 @@ npm install dkrcommands
 ##### **Development Build**
 
 ```bash
-npm install github:karelkryda/DKRCommands#development
+npm install github:DKRCommands/DKRCommands#build
 ```
+
+# 🧩 Plugins
+
+- **Cooldowns** - [GitHub](https://github.com/DKRCommands/Cooldowns) | [npm](https://www.npmjs.com/package/@dkrcommands/cooldowns) | [documentation](https://karel-kryda.gitbook.io/dkrcommands/plugins/cooldowns)
 
 # 🧭 Credits
 

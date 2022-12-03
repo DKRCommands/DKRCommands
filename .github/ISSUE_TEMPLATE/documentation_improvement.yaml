@@ -11,7 +11,7 @@ body:
     id: no_duplicate_issues
     attributes:
       label: "⚠️ Please verify that this documentation improvement has NOT been raised before."
-      description: Search in the issues sections by clicking [HERE](https://github.com/karelkryda/DKRCommands/issues?q=documentation)
+      description: Search in the issues sections by clicking [HERE](https://github.com/DKRCommands/DKRCommands/issues?q=documentation)
       options:
         - label: I checked and didn't find similar documentation improvement request
           required: true

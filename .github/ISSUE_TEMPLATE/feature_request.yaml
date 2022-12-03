@@ -11,7 +11,7 @@ body:
     id: no_duplicate_issues
     attributes:
       label: "⚠️ Please verify that this feature request has NOT been raised before."
-      description: Search in the issues sections by clicking [HERE](https://github.com/karelkryda/DKRCommands/issues?q=feature-request)
+      description: Search in the issues sections by clicking [HERE](https://github.com/DKRCommands/DKRCommands/issues?q=feature-request)
       options:
         - label: I checked and didn't find similar feature request
           required: true

@@ -1,9 +1,9 @@
-name: Production Build
+name: Development Build
 
 on:
   push:
     branches:
-      - main
+      - development
 
 jobs:
   production-build:
