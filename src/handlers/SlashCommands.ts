@@ -1,13 +1,21 @@
 import { isDeepStrictEqual } from "util";
 import {
-    ApplicationCommand, ApplicationCommandOption,
+    ApplicationCommand,
+    ApplicationCommandOption,
     ApplicationCommandOptionData,
     ChatInputCommandInteraction,
-    Client, Collection, GuildMember, InteractionResponse, Message, Snowflake, TextChannel
+    Client,
+    Collection,
+    GuildMember,
+    InteractionResponse,
+    Message,
+    Snowflake,
+    TextChannel
 } from "discord.js";
 import { DKRCommands, ICommand } from "../index";
 import { CommandCheckObject } from "../interfaces";
 import { abilityToRunCommand } from "../utils";
+import { Command } from "./Command";
 
 /**
  * The class responsible for registering, editing and responding to slash commands.
@@ -74,7 +82,7 @@ export class SlashCommands {
                 }))
                     return;
 
-                this.invokeCommand(interaction, commandName).then();
+                this.invokeCommand(interaction, command).then();
             });
         }
 
@@ -98,14 +106,9 @@ export class SlashCommands {
     /**
      * Calls the callback method of the slash command.
      * @param interaction - Discord interaction
-     * @param commandName - name of the called command
-     * @private
+     * @param command - DKRCommands command instance
      */
-    private async invokeCommand(interaction: ChatInputCommandInteraction, commandName: string): Promise<void> {
-        const command = this.instance.commandHandler.getCommand(commandName);
-        if (!command || !command.callback)
-            return;
-
+    public async invokeCommand(interaction: ChatInputCommandInteraction, command: Command): Promise<void> {
         const reply = await command.callback({
             instance: this.instance,
             client: this.client,

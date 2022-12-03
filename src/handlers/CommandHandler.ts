@@ -1,5 +1,5 @@
 import { existsSync } from "fs";
-import { Client, PermissionsBitField } from "discord.js";
+import { Client, Guild, Message, PermissionsBitField } from "discord.js";
 import { DKRCommands, ICommand } from "../index";
 import { Command } from "./Command";
 import { abilityToRunCommand, getAllFiles } from "../utils";
@@ -59,18 +59,30 @@ class CommandHandler {
                     }))
                         return;
 
-                    try {
-                        command.execute(message, args.join(" ")).then();
-                    } catch (e) {
-                        console.error(e);
-
-                        if (instance.errorMessages)
-                            message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
-                        instance.emit("commandException", instance, guild, command, e as Error, (reply: string | object) => {
-                            message.reply(reply).then();
-                        });
-                    }
+                    this.invokeCommand(instance, command, guild, message, args).then();
                 }
+            });
+        }
+    }
+
+    /**
+     * Calls the callback method of the legacy command.
+     * @param instance - DKRCommands instance
+     * @param command - DKRCommands command instance
+     * @param guild -Discord guild
+     * @param message - Discord message
+     * @param args - Command arguments
+     */
+    public async invokeCommand(instance: DKRCommands, command: Command, guild: Guild | null, message: Message, args: string[]) {
+        try {
+            command.execute(message, args.join(" ")).then();
+        } catch (e) {
+            console.error(e);
+
+            if (instance.errorMessages)
+                message.reply("An error occurred when running this command! This error has been reported to the developers.").then();
+            instance.emit("commandException", instance, guild, command, e as Error, (reply: string | object) => {
+                message.reply(reply).then();
             });
         }
     }

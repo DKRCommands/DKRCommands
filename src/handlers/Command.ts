@@ -18,6 +18,9 @@ export class Command {
     private readonly _requiresSameVoice: boolean;
     private readonly _testOnly: boolean;
     private readonly _slash: boolean | "both";
+    private readonly _globalCooldown: number | undefined;
+    private readonly _guildCooldown: number | undefined;
+    private readonly _userCooldown: number | undefined;
 
     public callback: (obj: ICallbackObject) => void | string | object;
 
@@ -29,7 +32,10 @@ export class Command {
         requiresVoice = false,
         requiresSameVoice = false,
         testOnly = false,
-        slash = false
+        slash = false,
+        globalCooldown,
+        guildCooldown,
+        userCooldown
     }: ICommand) {
         this._instance = instance;
         this._client = client;
@@ -42,6 +48,9 @@ export class Command {
         this._requiresSameVoice = requiresSameVoice;
         this._testOnly = testOnly;
         this._slash = slash;
+        this._globalCooldown = globalCooldown;
+        this._guildCooldown = guildCooldown;
+        this._userCooldown = userCooldown;
         this.callback = callback;
     }
 
@@ -326,5 +335,17 @@ export class Command {
 
     get slash(): boolean | "both" {
         return this._slash;
+    }
+
+    get globalCooldown(): number | undefined {
+        return this._globalCooldown;
+    }
+
+    get guildCooldown(): number | undefined {
+        return this._guildCooldown;
+    }
+
+    get userCooldown(): number | undefined {
+        return this._userCooldown;
     }
 }

@@ -7,7 +7,7 @@ interface DKRCommandsEvents {
     "databaseConnected": (connection: Connection, state: ConnectionStates) => void;
     "invalidSlashCommand": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
     "commandException": (instance: DKRCommands, guild: Guild | null, command: Command, error: Error, send: (message: string | object) => void) => void;
-    "commandCooldown": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
+    "commandCooldown": (instance: DKRCommands, guild: Guild | null, type: string, remainingSeconds: number, send: (message: string | object) => void) => void;
     "commandDisabled": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
     "commandGuildOnly": (instance: DKRCommands, send: (message: string | object) => void) => void;
     "commandOwnerOnly": (instance: DKRCommands, guild: Guild | null, send: (message: string | object) => void) => void;
@@ -20,7 +20,7 @@ interface DKRCommandsEvents {
 
 interface Options {
     commandsDir: string;
-    eventsDir: string;
+    eventsDir?: string;
     prefix?: string;
     showWarns?: boolean;
     errorMessages?: boolean;

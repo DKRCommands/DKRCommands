@@ -1,10 +1,12 @@
 import {
-    ApplicationCommandOptionData, ApplicationCommandSubCommandData,
+    ApplicationCommandOptionData,
+    ApplicationCommandSubCommandData,
     ChatInputCommandInteraction,
     Client,
     Guild,
     GuildMember,
-    Message, TextChannel,
+    Message,
+    TextChannel,
     User
 } from "discord.js";
 import { DKRCommands } from "../index";
@@ -21,6 +23,9 @@ interface ICommand {
     testOnly?: boolean;
     slash?: boolean | "both";
     options?: (ApplicationCommandOptionData & { options?: ApplicationCommandSubCommandData[] })[];
+    globalCooldown?: number;
+    guildCooldown?: number;
+    userCooldown?: number;
 
     init?(client: Client, instance: DKRCommands): void;
 
